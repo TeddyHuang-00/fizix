@@ -11,7 +11,7 @@
 /// ```
 /// use siunit::Dim;
 ///
-/// let d: Dim<1, 0, 0> = Dim::new(5.0);  // metres
+/// let d: Dim<f64, 1, 0, 0> = Dim::new(5.0); // metres
 /// assert_eq!(d.value, 5.0);
 /// ```
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
