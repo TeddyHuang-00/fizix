@@ -8,7 +8,7 @@ use crate::Dim;
 
 macro_rules! impl_add_sub {
     ($trait:ident, $fn:ident) => {
-        impl<const L: i8, const M: i8, const T: i8, V> $trait for Dim<L, M, T, V>
+        impl<const L: i8, const M: i8, const T: i8, V> $trait for Dim<V, L, M, T>
         where
             V: $trait<Output = V>,
         {
@@ -26,58 +26,53 @@ impl_add_sub!(Add, add);
 impl_add_sub!(Sub, sub);
 
 // ============================================================
-// Mul — exponents add
+// Mul / Div — dimension exponents calculation
 // ============================================================
 
-impl<const L1: i8, const M1: i8, const T1: i8, const L2: i8, const M2: i8, const T2: i8, V>
-    Mul<Dim<L2, M2, T2, V>> for Dim<L1, M1, T1, V>
-where
-    [(); (L1 + L2).unsigned_abs() as usize]:,
-    [(); (M1 + M2).unsigned_abs() as usize]:,
-    [(); (T1 + T2).unsigned_abs() as usize]:,
-    V: Mul<Output = V>,
-{
-    type Output = Dim<{ L1 + L2 }, { M1 + M2 }, { T1 + T2 }, V>;
+macro_rules! impl_mul_div {
+    ($trait:ident, $fn:ident, $op:tt) => {
+        impl<
+            const L1: i8,
+            const M1: i8,
+            const T1: i8,
+            const L2: i8,
+            const M2: i8,
+            const T2: i8,
+            Vi,
+            V,
+        > $trait<Dim<Vi, L2, M2, T2>> for Dim<Vi, L1, M1, T1>
+        where
+            [(); (L1 $op L2).unsigned_abs() as usize]:,
+            [(); (M1 $op M2).unsigned_abs() as usize]:,
+            [(); (T1 $op T2).unsigned_abs() as usize]:,
+            Vi: $trait<Output = V>,
+        {
+            type Output = Dim<V, { L1 $op L2 }, { M1 $op M2 }, { T1 $op T2 }>;
 
-    #[inline]
-    fn mul(self, rhs: Dim<L2, M2, T2, V>) -> Self::Output {
-        Dim::new(self.value * rhs.value)
-    }
+            #[inline]
+            fn $fn(self, rhs: Dim<Vi, L2, M2, T2>) -> Self::Output {
+                Dim::new(self.value.$fn(rhs.value))
+            }
+        }
+    };
 }
 
-// ============================================================
-// Div — exponents subtract
-// ============================================================
-
-impl<const L1: i8, const M1: i8, const T1: i8, const L2: i8, const M2: i8, const T2: i8, V>
-    Div<Dim<L2, M2, T2, V>> for Dim<L1, M1, T1, V>
-where
-    [(); (L1 - L2).unsigned_abs() as usize]:,
-    [(); (M1 - M2).unsigned_abs() as usize]:,
-    [(); (T1 - T2).unsigned_abs() as usize]:,
-    V: Div<Output = V>,
-{
-    type Output = Dim<{ L1 - L2 }, { M1 - M2 }, { T1 - T2 }, V>;
-
-    #[inline]
-    fn div(self, rhs: Dim<L2, M2, T2, V>) -> Self::Output {
-        Dim::new(self.value / rhs.value)
-    }
-}
+impl_mul_div!(Mul, mul, +);
+impl_mul_div!(Div, div, -);
 
 // ============================================================
 // Neg — value negation, dimensions unchanged
 // ============================================================
 
-impl<const L: i8, const M: i8, const T: i8, V> Neg for Dim<L, M, T, V>
+impl<const L: i8, const M: i8, const T: i8, Vi, V> Neg for Dim<Vi, L, M, T>
 where
-    V: Neg<Output = V>,
+    Vi: Neg<Output = V>,
 {
-    type Output = Self;
+    type Output = Dim<V, L, M, T>;
 
     #[inline]
     fn neg(self) -> Self::Output {
-        Self::new(-self.value)
+        Dim::new(-self.value)
     }
 }
 
@@ -91,21 +86,21 @@ macro_rules! impl_ctor {
         $(
             #[doc = $doc]
             #[inline]
-            pub const fn $fn<V>(v: V) -> Dim<$l, $m, $t, V> { Dim::new(v) }
+            pub const fn $fn<V>(v: V) -> Dim<V, $l, $m, $t> { Dim::new(v) }
         )+
     };
 }
 
 impl_ctor! {
-    (meters,   1, 0, 0, "Create a quantity in metres (m)"),
-    (kilograms, 0, 1, 0, "Create a quantity in kilograms (kg)"),
-    (seconds,   0, 0, 1, "Create a quantity in seconds (s)"),
+    (meters,    1, 0,  0, "Create a quantity in metres (m)"),
+    (kilograms, 0, 1,  0, "Create a quantity in kilograms (kg)"),
+    (seconds,   0, 0,  1, "Create a quantity in seconds (s)"),
     (newtons,   1, 1, -2, "Create a quantity in newtons (N, kg·m·s⁻²)"),
     (joules,    2, 1, -2, "Create a quantity in joules (J, N·m)"),
     (watts,     2, 1, -3, "Create a quantity in watts (W, J·s⁻¹)"),
     (pascals,  -1, 1, -2, "Create a quantity in pascals (Pa, N·m⁻²)"),
     (hertzs,    0, 0, -1, "Create a quantity in hertz (Hz, s⁻¹)"),
-    (scalar,    0, 0, 0,  "Create a dimensionless quantity")
+    (scalar,    0, 0,  0, "Create a dimensionless quantity")
 }
 
 // ============================================================

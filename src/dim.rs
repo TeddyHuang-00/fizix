@@ -16,20 +16,20 @@
 /// ```
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Dim<
-    // Length exponent (L)
-    const L: i8,
-    // Mass exponent (M)
-    const M: i8,
-    // Time exponent (T)
-    const T: i8,
     // Value type
     V,
+    // Length exponent (L)
+    const L: i8 = 0,
+    // Mass exponent (M)
+    const M: i8 = 0,
+    // Time exponent (T)
+    const T: i8 = 0,
 > {
     /// The numeric value of this quantity.
     pub value: V,
 }
 
-impl<const L: i8, const M: i8, const T: i8, V> Dim<L, M, T, V> {
+impl<const L: i8, const M: i8, const T: i8, V> Dim<V, L, M, T> {
     /// Create a new quantity with the given numeric value.
     #[inline]
     #[must_use]
