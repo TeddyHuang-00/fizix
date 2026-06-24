@@ -18,7 +18,7 @@ alias_units! {
     (Meter, "Length (m)",                     1, 0, 0, 0, 0, 0, 0),
     (Kilogram, "Mass (kg)",                   0, 1, 0, 0, 0, 0, 0),
     (Second, "Time (s)",                      0, 0, 1, 0, 0, 0, 0),
-    (Amphere, "Eletric Current (A)",          0, 0, 0, 1, 0, 0, 0),
+    (Amphere, "Electric Current (A)",         0, 0, 0, 1, 0, 0, 0),
     (Kelvin, "Thermodynamic temperature (K)", 0, 0, 0, 0, 1, 0, 0),
     (Mole, "Amount of substance (mol)",       0, 0, 0, 0, 0, 1, 0),
     (Candela, "Luminous intensity (cd)",      0, 0, 0, 0, 0, 0, 1),
