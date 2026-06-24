@@ -1,0 +1,21 @@
+# Format code
+format:
+    cargo fmt --all
+    cargo sort
+    cargo sort-derives
+
+# Check unused dependencies
+deps:
+    cargo udeps
+
+# Check for errors
+check: && format
+    cargo clippy --fix --allow-staged
+
+# Unit tests
+test: check
+    cargo test
+
+# Coverage report
+coverage: check
+    cargo tarpaulin --out Html --output-dir coverage
