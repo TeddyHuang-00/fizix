@@ -121,7 +121,7 @@ mod tests {
     fn test_speed() {
         let d = meters(100.0);
         let t = seconds(10.0);
-        let v: Speed<f64> = d / t;
+        let v = d / t;
         is_close(v.value, 10.0);
     }
 
@@ -166,13 +166,13 @@ mod tests {
     #[test]
     fn test_frequency() {
         let period = seconds(0.02);
-        let freq: Hertz<f64> = scalar(1.0) / period;
+        let freq = scalar(1.0) / period;
         is_close(freq.value, 50.0);
     }
 
     #[test]
     fn test_newton() {
-        let force: Newton<f64> = kilograms(2.0) * meters(9.8) / (seconds(1.0) * seconds(1.0));
+        let force = kilograms(2.0) * meters(9.8) / (seconds(1.0) * seconds(1.0));
         is_close(force.value, 19.6);
     }
 
