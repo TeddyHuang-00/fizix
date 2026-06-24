@@ -15,7 +15,7 @@ Electromagnetism and photometry (I, Θ, N, J) blocked on compiler improvements.
 
 ### v0.1.x — Foundation (3D)
 
-- [x] `Dim<L, M, T>` struct with `f64` value
+- [x] `Unit<L, M, T>` struct with `f64` value
 - [x] `Add`, `Sub`, `Mul`, `Div`, `Neg` operators
 - [x] Helper constructors (`meters(5.0)`, `seconds(10.0)`, etc.)
 - [x] SI base unit aliases (Meter, Kilogram, Second)

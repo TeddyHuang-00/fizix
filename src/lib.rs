@@ -8,8 +8,8 @@
 //! ```rust
 //! use siunit::*;
 //!
-//! let d = meters(100.0);
-//! let t = seconds(10.0);
+//! let d = Meter::new(100.0);
+//! let t = Second::new(10.0);
 //! let _ = d + d;               // OK: same dimension
 //! // let _ = d + t;            // ❌ compile error: dimension mismatch
 //! ```
@@ -28,12 +28,10 @@
 #![allow(incomplete_features)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 mod dim;
-mod ops;
 mod units;
 
-pub use dim::Dim;
-pub use ops::{hertzs, joules, kilograms, meters, newtons, pascals, scalar, seconds, watts};
+pub use dim::Unit;
 pub use units::*;

@@ -18,7 +18,8 @@ nightly = true
 crate-type = ["lib"]
 
 [features]
-default = []
+default = ["std"]
+std = []
 
 [dependencies]
 
