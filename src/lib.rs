@@ -28,6 +28,7 @@
 #![allow(incomplete_features)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
+#![no_std]
 
 mod dim;
 mod ops;
