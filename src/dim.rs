@@ -18,18 +18,28 @@
 pub struct Dim<
     // Value type
     V,
-    // Length exponent (L)
-    const L: i8 = 0,
-    // Mass exponent (M)
+    // Length exponent (Meter)
     const M: i8 = 0,
-    // Time exponent (T)
-    const T: i8 = 0,
+    // Mass exponent (kiloGram)
+    const G: i8 = 0,
+    // Time exponent (Second)
+    const S: i8 = 0,
+    // Current exponent (Amphere)
+    const A: i8 = 0,
+    // Temperature exponent (Kelvin)
+    const K: i8 = 0,
+    // Amount exponent (mOle)
+    const O: i8 = 0,
+    // Intensity exponent (Candela)
+    const C: i8 = 0,
 > {
     /// The numeric value of this quantity.
     pub value: V,
 }
 
-impl<const L: i8, const M: i8, const T: i8, V> Dim<V, L, M, T> {
+impl<const M: i8, const G: i8, const S: i8, const A: i8, const K: i8, const O: i8, const C: i8, V>
+    Dim<V, M, G, S, A, K, O, C>
+{
     /// Create a new quantity with the given numeric value.
     #[inline]
     #[must_use]
