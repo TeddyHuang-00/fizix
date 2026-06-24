@@ -14,7 +14,7 @@
 /// let d: Dim<f64, 1, 0, 0> = Dim::new(5.0); // metres
 /// assert_eq!(d.value, 5.0);
 /// ```
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Dim<
     // Value type
     V,
