@@ -193,25 +193,309 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_initialization() {
-        struct U;
-        let f64 = Unit::<f64>::new(1.0);
-        let f32 = Unit::<f32>::new(1.0);
-        let u64 = Unit::<u64>::new(1);
-        let u32 = Unit::<u32>::new(1);
-        let u16 = Unit::<u16>::new(1);
-        let u8 = Unit::<u8>::new(1);
-        let bool = Unit::<bool>::new(true);
-        let aribtrary = Unit::<U>::new(U);
+    #[derive(Debug, Default, Eq, PartialEq)]
+    struct X;
 
-        assert_eq!(f64.type_id(), TypeId::of::<Unit<f64>>());
-        assert_eq!(f32.type_id(), TypeId::of::<Unit<f32>>());
-        assert_eq!(u64.type_id(), TypeId::of::<Unit<u64>>());
-        assert_eq!(u32.type_id(), TypeId::of::<Unit<u32>>());
-        assert_eq!(u16.type_id(), TypeId::of::<Unit<u16>>());
-        assert_eq!(u8.type_id(), TypeId::of::<Unit<u8>>());
-        assert_eq!(bool.type_id(), TypeId::of::<Unit<bool>>());
-        assert_eq!(aribtrary.type_id(), TypeId::of::<Unit<U>>());
+    type FloatScalar = Unit<f64>;
+    type IntScalar = Unit<i64>;
+    type ArbitraryScalar = Unit<X>;
+
+    const TYPE_FLOAT_SCALAR: TypeId = TypeId::of::<FloatScalar>();
+    const TYPE_INT_SCALAR: TypeId = TypeId::of::<IntScalar>();
+    const TYPE_ARBITRARY_SCALAR: TypeId = TypeId::of::<ArbitraryScalar>();
+
+    type FloatUnit = Unit<f64, 1, 2, 3, 4, 5, 6, 7>;
+    type FloatUnitSquared = Unit<f64, 2, 4, 6, 8, 10, 12, 14>;
+    type IntUnit = Unit<i64, 1, 2, 3, 4, 5, 6, 7>;
+    type IntUnitSquared = Unit<i64, 2, 4, 6, 8, 10, 12, 14>;
+    type ArbitraryUnit = Unit<X, 1, 2, 3, 4, 5, 6, 7>;
+
+    const TYPE_FLOAT_UNIT: TypeId = TypeId::of::<FloatUnit>();
+    const TYPE_FLOAT_UNIT_SQUARED: TypeId = TypeId::of::<FloatUnitSquared>();
+    const TYPE_INT_UNIT: TypeId = TypeId::of::<IntUnit>();
+    const TYPE_INT_UNIT_SQUARED: TypeId = TypeId::of::<IntUnitSquared>();
+    const TYPE_ARBITRARY_UNIT: TypeId = TypeId::of::<ArbitraryUnit>();
+
+    // Test for scalar creation
+
+    #[test]
+    fn test_scalar_initialization() {
+        let float = FloatScalar::new(1.0);
+        let int = IntScalar::new(1);
+        let arbitrary = ArbitraryScalar::new(X);
+
+        assert_eq!(float.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(arbitrary.type_id(), TYPE_ARBITRARY_SCALAR);
+
+        assert_eq!(float.value, 1.0);
+        assert_eq!(int.value, 1);
+        assert_eq!(arbitrary.value, X);
+    }
+
+    #[test]
+    fn test_scalar_from_value() {
+        let float: FloatScalar = 1.0.into();
+        let int: IntScalar = 1.into();
+        let arbitrary: ArbitraryScalar = X.into();
+
+        assert_eq!(float.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(arbitrary.type_id(), TYPE_ARBITRARY_SCALAR);
+
+        assert_eq!(float.value, 1.0);
+        assert_eq!(int.value, 1);
+        assert_eq!(arbitrary.value, X);
+    }
+
+    // Test for scalar arithmic
+
+    #[test]
+    fn test_scalar_neg() {
+        let float: FloatScalar = 10.0.into();
+        let int: IntScalar = 10.into();
+
+        let float_neg = -float;
+        let int_neg = -int;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_neg.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int_neg.type_id(), TYPE_INT_SCALAR);
+
+        // The values should reflect the result
+        assert_eq!(float_neg.value, -10.0);
+        assert_eq!(int_neg.value, -10);
+    }
+
+    #[test]
+    fn test_scalar_add_sub() {
+        let float: FloatScalar = 10.0.into();
+        let int: IntScalar = 10.into();
+
+        let float_add = float + float;
+        let float_sub = float - float;
+        let int_add = int + int;
+        let int_sub = int - int;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_add.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(float_sub.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int_add.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(int_sub.type_id(), TYPE_INT_SCALAR);
+
+        // The values should reflect the result
+        assert_eq!(float_add.value, 20.0);
+        assert_eq!(float_sub.value, 0.0);
+        assert_eq!(int_add.value, 20);
+        assert_eq!(int_sub.value, 0);
+    }
+
+    #[test]
+    fn test_scalar_mul_div() {
+        let float: FloatScalar = 10.0.into();
+        let int: IntScalar = 10.into();
+
+        let float_mul = float * float;
+        let float_div = float / float;
+        let int_mul = int * int;
+        let int_div = int / int;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_mul.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(float_div.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int_mul.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(int_div.type_id(), TYPE_INT_SCALAR);
+
+        // The values should reflect the result
+        assert_eq!(float_mul.value, 100.0);
+        assert_eq!(float_div.value, 1.0);
+        assert_eq!(int_mul.value, 100);
+        assert_eq!(int_div.value, 1);
+    }
+
+    #[test]
+    fn test_scalar_mul_div_raw() {
+        let float: FloatScalar = 10.0.into();
+        let int: IntScalar = 10.into();
+
+        let float_mul_lhs = float * 10.0;
+        let float_div_lhs = float / 10.0;
+        let int_mul_lhs = int * 10;
+        let int_div_lhs = int / 10;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_mul_lhs.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(float_div_lhs.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int_mul_lhs.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(int_div_lhs.type_id(), TYPE_INT_SCALAR);
+
+        // The values should reflect the result
+        assert_eq!(float_mul_lhs.value, 100.0);
+        assert_eq!(float_div_lhs.value, 1.0);
+        assert_eq!(int_mul_lhs.value, 100);
+        assert_eq!(int_div_lhs.value, 1);
+    }
+
+    // Test for scalar derives
+
+    #[test]
+    fn test_scalar_default() {
+        let float = FloatScalar::default();
+        let int = IntScalar::default();
+        let arbitrary = ArbitraryScalar::default();
+
+        assert_eq!(float.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int.type_id(), TYPE_INT_SCALAR);
+        assert_eq!(arbitrary.type_id(), TYPE_ARBITRARY_SCALAR);
+
+        assert_eq!(float.value, f64::default());
+        assert_eq!(int.value, i64::default());
+        assert_eq!(arbitrary.value, X);
+    }
+
+    #[test]
+    fn test_scalar_cmp() {
+        let float = FloatScalar::new(10.0);
+        let int = IntScalar::new(10);
+
+        assert!(float < float * 2.0);
+        assert!(int < int * 2);
+
+        assert!(float == float);
+        assert!(int == int);
+    }
+
+    // Test for non-scalar creation
+
+    #[test]
+    fn test_non_scalar_initialization() {
+        let float = FloatUnit::new(1.0);
+        let int = IntUnit::new(1);
+        let arbitrary = ArbitraryUnit::new(X);
+
+        assert_eq!(float.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(int.type_id(), TYPE_INT_UNIT);
+        assert_eq!(arbitrary.type_id(), TYPE_ARBITRARY_UNIT);
+
+        assert_eq!(float.value, 1.0);
+        assert_eq!(int.value, 1);
+        assert_eq!(arbitrary.value, X);
+    }
+
+    // Test for non-scalar arithmic
+
+    #[test]
+    fn test_non_scalar_neg() {
+        let float = FloatUnit::new(10.0);
+        let int = IntUnit::new(10);
+
+        let float_neg = -float;
+        let int_neg = -int;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_neg.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(int_neg.type_id(), TYPE_INT_UNIT);
+
+        // The values should reflect the result
+        assert_eq!(float_neg.value, -10.0);
+        assert_eq!(int_neg.value, -10);
+    }
+
+    #[test]
+    fn test_non_scalar_add_sub() {
+        let float = FloatUnit::new(10.0);
+        let int = IntUnit::new(10);
+
+        let float_add = float + float;
+        let float_sub = float - float;
+        let int_add = int + int;
+        let int_sub = int - int;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_add.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(float_sub.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(int_add.type_id(), TYPE_INT_UNIT);
+        assert_eq!(int_sub.type_id(), TYPE_INT_UNIT);
+
+        // The values should reflect the result
+        assert_eq!(float_add.value, 20.0);
+        assert_eq!(float_sub.value, 0.0);
+        assert_eq!(int_add.value, 20);
+        assert_eq!(int_sub.value, 0);
+    }
+
+    #[test]
+    fn test_non_scalar_mul_div() {
+        let float = FloatUnit::new(10.0);
+        let int = IntUnit::new(10);
+
+        let float_mul = float * float;
+        let float_div = float / float;
+        let int_mul = int * int;
+        let int_div = int / int;
+
+        // Calculation SHOULD change unit type
+        assert_eq!(float_mul.type_id(), TYPE_FLOAT_UNIT_SQUARED);
+        assert_eq!(float_div.type_id(), TYPE_FLOAT_SCALAR);
+        assert_eq!(int_mul.type_id(), TYPE_INT_UNIT_SQUARED);
+        assert_eq!(int_div.type_id(), TYPE_INT_SCALAR);
+
+        // The values should reflect the result
+        assert_eq!(float_mul.value, 100.0);
+        assert_eq!(float_div.value, 1.0);
+        assert_eq!(int_mul.value, 100);
+        assert_eq!(int_div.value, 1);
+    }
+
+    #[test]
+    fn test_non_scalar_mul_div_raw() {
+        let float = FloatUnit::new(10.0);
+        let int = IntUnit::new(10);
+
+        let float_mul_lhs = float * 10.0;
+        let float_div_lhs = float / 10.0;
+        let int_mul_lhs = int * 10;
+        let int_div_lhs = int / 10;
+
+        // Calculation should NOT change unit type
+        assert_eq!(float_mul_lhs.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(float_div_lhs.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(int_mul_lhs.type_id(), TYPE_INT_UNIT);
+        assert_eq!(int_div_lhs.type_id(), TYPE_INT_UNIT);
+
+        // The values should reflect the result
+        assert_eq!(float_mul_lhs.value, 100.0);
+        assert_eq!(float_div_lhs.value, 1.0);
+        assert_eq!(int_mul_lhs.value, 100);
+        assert_eq!(int_div_lhs.value, 1);
+    }
+
+    // Test for non-scalar creation
+
+    #[test]
+    fn test_non_scalar_default() {
+        let float = FloatUnit::default();
+        let int = IntUnit::default();
+        let arbitrary = ArbitraryUnit::default();
+
+        assert_eq!(float.type_id(), TYPE_FLOAT_UNIT);
+        assert_eq!(int.type_id(), TYPE_INT_UNIT);
+        assert_eq!(arbitrary.type_id(), TYPE_ARBITRARY_UNIT);
+
+        assert_eq!(float.value, f64::default());
+        assert_eq!(int.value, i64::default());
+        assert_eq!(arbitrary.value, X);
+    }
+
+    #[test]
+    fn test_non_scalar_cmp() {
+        let float = FloatUnit::new(10.0);
+        let int = IntUnit::new(10);
+
+        assert!(float < float * 2.0);
+        assert!(int < int * 2);
+
+        assert!(float == float);
+        assert!(int == int);
     }
 }
