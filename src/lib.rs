@@ -1,7 +1,8 @@
-//! **siunit** — Compile-time checked SI units via const generics.
+//! **siunit** — Compile-time checked SI units via type-level integers.
 //!
-//! Every physical quantity carries its dimension as const generic parameters.
-//! Dimension mismatches are caught at compile time with zero runtime overhead.
+//! Every physical quantity carries its dimension as [`typenum`] type
+//! parameters. Dimension mismatches are caught at compile time with zero
+//! runtime overhead.
 //!
 //! # Example
 //!
@@ -14,18 +15,9 @@
 //! // let _ = d + t;            // ❌ compile error: dimension mismatch
 //! ```
 //!
-//! Type-safe dimension arithmetic is achieved through `Mul`/`Div` — the
-//! returned type is inferred and dimension mismatches are caught at
-//! compile time. See the [tests](https://github.com/TeddyHuang-00/siunit)
-//! for worked examples.
-//!
-//! # Nightly Required
-//!
-//! This crate uses `#![feature(generic_const_exprs)]` for const arithmetic
-//! on dimension exponents. Stable support tracked at [rust#76560].
+//! Type-safe dimension arithmetic is achieved through `Mul`/`Div` with
+//! [`typenum`] type-level arithmetic on dimension exponents.
 
-#![feature(generic_const_exprs)]
-#![allow(incomplete_features)]
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]

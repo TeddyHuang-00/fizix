@@ -1,29 +1,30 @@
 # siunit — SI Units at Compile Time
 
-**Compile-time checked SI units via Rust const generics.**
+**Compile-time checked SI units via [`typenum`](https://crates.io/crates/typenum) type-level integers.**
 Dimension mismatches caught at compile time, zero runtime overhead.
 
-[![Nightly][nightly-badge]](https://rust-lang.github.io/rfcs/2000-const-generics.html)
+[![Crates.io][crates-badge]](https://crates.io/crates/siunit)
 
 ## Status
 
-**v0.1.0** — 3 base dimensions (L, M, T).\
-Covers mechanics, acoustics, and thermodynamics.\
-Electromagnetism and photometry (I, Θ, N, J) blocked on compiler improvements.
+**v0.1.0** — 7 base dimensions (L, M, T, I, Θ, N, J).\
+Works on **stable Rust** (edition 2024, ≥1.85).\
+Cross-crate usage confirmed.
 
 ## Roadmap
 
-### v0.1.x — Foundation (3D)
+### v0.1.x — Foundation ✅
 
-- [x] `Unit<L, M, T>` struct with `f64` value
+- [x] `Unit<V, M, G, S, A, K, O, C>` struct with `typenum` type-level dimensions
 - [x] `Add`, `Sub`, `Mul`, `Div`, `Neg` operators
+- [x] SI base unit aliases (Meter, Kilogram, Second, Ampere, Kelvin, Mole, Candela)
+- [x] SI derived unit aliases (Newton, Joule, Watt, Pascal, Hertz)
+- [x] Convenience aliases (Speed, Acceleration, Area, Volume, Momentum, etc.)
 - [x] Helper constructors (`meters(5.0)`, `seconds(10.0)`, etc.)
-- [x] SI base unit aliases (Meter, Kilogram, Second)
-- [x] SI derived unit aliases (Newton, Joule, Watt, Pascal, Hertz, etc.)
-- [x] Compile-time dimension mismatch rejection (via `Add`/`Sub` on different types)
-- [ ] README with usage examples and known limitations
-- [ ] `no_std` support (inherent from design)
-- [ ] `serde` feature for serialization
+- [x] Compile-time dimension mismatch rejection
+- [x] `no_std` support
+- [x] Cross-crate operation support
+- [x] `cargo +stable test` passes (24 tests)
 
 ### v0.2.x — Usability
 
@@ -33,34 +34,42 @@ Electromagnetism and photometry (I, Θ, N, J) blocked on compiler improvements.
 - [ ] `MulAssign`, `DivAssign`
 - [ ] `PartialOrd`, `Ord` (same dimensions only)
 - [ ] More unit aliases (Angstrom, LightYear, Parsec, etc. — via features)
+- [ ] `serde` feature for serialization
 
-### v0.3.x — Extended Dimensions
-
-- [ ] 7D upgrade: L, M, T, I, Θ, N, J
-  - *Blocked on:* rustc const-expr normalization ([rust#76560])
-- [ ] EM derived units (Volt, Ohm, Farad, Tesla, Henry, etc.)
-- [ ] `sqrt` trait (fractional exponents via rational const generics)
-
-### v0.4.x — Maturity
+### v1.0 — Maturity
 
 - [ ] Benchmark vs `uom` (compile time, binary size)
-- [ ] `generic_const_exprs` stabilization → stable Rust support
+- [ ] `generic_const_exprs` stabilization → optional const-generic backend
 - [ ] SI prefix macros (`kilo!(Meter)`, `milli!(Second)`)
-- [ ] Named derived unit constructor functions
 
-## Known Limitations
+## Earlier Attempts (Nightly)
 
-- **Nightly only:** uses `#![feature(generic_const_exprs)]`
-- **Explicit type annotations on computed quantities** fail due to const-expr
-  non-normalization. Use type inference for result types.
-- **3 dimensions only:** I, Θ, N, J reserved for future compiler improvements.
+Before migrating to typenum, we attempted a `generic_const_exprs`-based design:
 
-## Related
+```rust
+// Original design (nightly-only, archived)
+pub struct Unit<V, const M: i8 = 0, …>;
+// type Output = Unit<V, { M1 + M2 }, …>;
+```
 
-| Crate         | Approach                | Lines | Stable     |
-| ------------- | ----------------------- | ----- | ---------- |
-| **siunit**    | const generics          | ~100  | ❌ nightly |
-| `uom`         | typenum type-level ints | ~40K  | ✅         |
-| `dimensioned` | typenum type-level ints | ~10K  | ✅         |
+This approach was abandoned because:
+1. `generic_const_exprs` (rust-lang/rust#76560) is unstable and "very broken" per rustc team
+2. Cross-crate usage causes E0275 trait solver overflow
+3. No viable workaround found (packed i64, combined where-clauses, `-Znext-solver` all failed)
+4. The successor feature `generic_const_args` (#151972) is also nightly-only and doesn't allow `{M1 + M2}` in type position
 
-[nightly-badge]: https://img.shields.io/badge/nightly-required-red
+When either feature stabilizes on stable Rust, siunit can offer an optional const-generic backend via a feature flag — but for now, typenum provides a proven, stable foundation (used by `uom` for 8+ years).
+
+## Comparison
+
+| Crate         | Approach                | Stable | Lines |
+| ------------- | ----------------------- | ------ | ----- |
+| **siunit**    | typenum type-level ints | ✅     | ~300  |
+| `uom`         | typenum type-level ints | ✅     | ~90K  |
+| `dimensioned` | typenum type-level ints | ✅     | ~10K  |
+
+## License
+
+MIT OR Apache-2.0
+
+[crates-badge]: https://img.shields.io/crates/v/siunit.svg

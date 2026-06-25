@@ -1,60 +1,61 @@
 use paste::paste;
+use typenum::{N1, N2, N3, P1, P2, P3, Z0};
 
 use crate::Unit;
 
 // Helper structs/functions/constants: let users write:
-// - `Mole<f64>::new(1.0)`, or
+// - `Mole::new(1.0f64)`, or
 // - `mole(1.0f64)`, or
 // - `MOLE`
-// instead of `Unit<f64, 0, 0, 0, 0, 0, 1>::new(1.0)`
+// instead of `Unit<f64, Z0, Z0, Z0, Z0, Z0, P1>::new(1.0)`
 macro_rules! alias_units {
-    ($(($name:ident, $doc:literal, $($val:expr),+)),+$(,)?) => {
+    ($(($name:ident, $doc:literal, $($dim:ty),+)),+$(,)?) => {
         $(
             paste! {
                 #[doc = $doc]
-                pub type $name<V> = Unit<V$(, $val)+>;
+                pub type $name<V> = Unit<V, $($dim),+>;
 
                 #[doc = $doc]
-                pub const fn [<$name:snake>]<V>(v: V) -> $name::<V> {
-                    $name::<V>::new(v)
+                #[inline]
+                pub const fn [<$name:snake>]<V>(v: V) -> $name<V> {
+                    $name::new(v)
                 }
 
                 #[doc = $doc]
-                pub const [<$name:snake:upper>]: $name<f64> =
-                    [<$name:snake>](1.0);
+                pub const [<$name:snake:upper>]: $name<f64> = $name::new(1.0);
             }
         )+
     };
 }
 
 alias_units! {
-    // (Name, Doc string,                     M, G, S, A, K, O, C)
+    // (Name, Doc string,                       M,  G,  S,  A,  K,  O,  C )
     // base units
-    (Scalar,   "Dimensionless quantity",        0, 0, 0, 0, 0, 0, 0),
-    (Meter,    "Length (m)",                    1, 0, 0, 0, 0, 0, 0),
-    (Kilogram, "Mass (kg)",                     0, 1, 0, 0, 0, 0, 0),
-    (Second,   "Time (s)",                      0, 0, 1, 0, 0, 0, 0),
-    (Amphere,  "Electric Current (A)",          0, 0, 0, 1, 0, 0, 0),
-    (Kelvin,   "Thermodynamic temperature (K)", 0, 0, 0, 0, 1, 0, 0),
-    (Mole,     "Amount of substance (mol)",     0, 0, 0, 0, 0, 1, 0),
-    (Candela,  "Luminous intensity (cd)",       0, 0, 0, 0, 0, 0, 1),
+    (Scalar,   "Dimensionless quantity",        Z0, Z0, Z0, Z0, Z0, Z0, Z0),
+    (Meter,    "Length (m)",                    P1, Z0, Z0, Z0, Z0, Z0, Z0),
+    (Kilogram, "Mass (kg)",                     Z0, P1, Z0, Z0, Z0, Z0, Z0),
+    (Second,   "Time (s)",                      Z0, Z0, P1, Z0, Z0, Z0, Z0),
+    (Ampere,   "Electric Current (A)",          Z0, Z0, Z0, P1, Z0, Z0, Z0),
+    (Kelvin,   "Thermodynamic temperature (K)", Z0, Z0, Z0, Z0, P1, Z0, Z0),
+    (Mole,     "Amount of substance (mol)",     Z0, Z0, Z0, Z0, Z0, P1, Z0),
+    (Candela,  "Luminous intensity (cd)",       Z0, Z0, Z0, Z0, Z0, Z0, P1),
     // derived units
-    (Newton, "Force in newton (N, kg·m·s⁻²)",   1, 1, -2, 0, 0, 0, 0),
-    (Joule,  "Energy in joule (J, N·m)",        2, 1, -2, 0, 0, 0, 0),
-    (Watt,   "Power in watt (W, J·s⁻¹)",        2, 1, -3, 0, 0, 0, 0),
-    (Pascal, "Pressure in pascal (Pa, N·m⁻²)", -1, 1, -2, 0, 0, 0, 0),
-    (Hertz,  "Frequency in hertz (Hz, s⁻¹)",    0, 0, -1, 0, 0, 0, 0),
+    (Newton, "Force (N, kg·m·s⁻²)",            P1, P1, N2, Z0, Z0, Z0, Z0),
+    (Joule,  "Energy (J, N·m)",                P2, P1, N2, Z0, Z0, Z0, Z0),
+    (Watt,   "Power (W, J·s⁻¹)",               P2, P1, N3, Z0, Z0, Z0, Z0),
+    (Pascal, "Pressure (Pa, N·m⁻²)",           N1, P1, N2, Z0, Z0, Z0, Z0),
+    (Hertz,  "Frequency (Hz, s⁻¹)",            Z0, Z0, N1, Z0, Z0, Z0, Z0),
     // convenience aliases
-    (Speed,              "Speed in m·s⁻¹",                1, 0, -1, 0, 0, 0, 0),
-    (Acceleration,       "Acceleration in m·s⁻²",         1, 0, -2, 0, 0, 0, 0),
-    (Area,               "Area in m²",                    2, 0,  0, 0, 0, 0, 0),
-    (Volume,             "Volume in m³",                  3, 0,  0, 0, 0, 0, 0),
-    (Momentum,           "Momentum in kg·m·s⁻¹",          1, 1, -1, 0, 0, 0, 0),
-    (AngularMomentum,    "Angular momentum in kg·m²·s⁻¹", 2, 1, -1, 0, 0, 0, 0),
-    (Torque,             "Torque in N·m",                 2, 1, -2, 0, 0, 0, 0),
-    (Density,            "Density in kg·m⁻³",            -3, 1,  0, 0, 0, 0, 0),
-    (DynamicViscosity,   "Dynamic viscosity in Pa·s",    -1, 1, -1, 0, 0, 0, 0),
-    (KinematicViscosity, "Kinematic viscosity in m²·s⁻¹", 2, 0, -1, 0, 0, 0, 0),
+    (Speed,              "(m·s⁻¹)",     P1, Z0, N1, Z0, Z0, Z0, Z0),
+    (Acceleration,       "(m·s⁻²)",     P1, Z0, N2, Z0, Z0, Z0, Z0),
+    (Area,               "(m²)",        P2, Z0, Z0, Z0, Z0, Z0, Z0),
+    (Volume,             "(m³)",        P3, Z0, Z0, Z0, Z0, Z0, Z0),
+    (Momentum,           "(kg·m·s⁻¹)",  P1, P1, N1, Z0, Z0, Z0, Z0),
+    (AngularMomentum,    "(kg·m²·s⁻¹)", P2, P1, N1, Z0, Z0, Z0, Z0),
+    (Torque,             "(N·m)",       P2, P1, N2, Z0, Z0, Z0, Z0),
+    (Density,            "(kg·m⁻³)",    N3, P1, Z0, Z0, Z0, Z0, Z0),
+    (DynamicViscosity,   "(Pa·s)",      N1, P1, N1, Z0, Z0, Z0, Z0),
+    (KinematicViscosity, "(m²·s⁻¹)",    P2, Z0, N1, Z0, Z0, Z0, Z0),
 }
 
 #[cfg(all(test, feature = "std"))]
@@ -81,9 +82,24 @@ mod tests {
 
     #[test]
     fn test_derived() {
-        // Type inference on this "long" calculation will simply take too long
-        // to finish
+        assert_eq!(NEWTON, KILOGRAM * METER / SECOND / SECOND);
+        assert_eq!(JOULE, NEWTON * METER);
+        assert_eq!(WATT, JOULE / SECOND);
+        assert_eq!(PASCAL, NEWTON / (METER * METER));
+        assert_eq!(HERTZ, SCALAR / SECOND);
+    }
 
-        // assert_eq!(NEWTON, KILOGRAM * METER / SECOND / SECOND);
+    #[test]
+    fn test_conveniece() {
+        assert_eq!(SPEED, METER / SECOND);
+        assert_eq!(ACCELERATION, SPEED / SECOND);
+        assert_eq!(AREA, METER * METER);
+        assert_eq!(VOLUME, AREA * METER);
+        assert_eq!(MOMENTUM, KILOGRAM * SPEED);
+        assert_eq!(ANGULAR_MOMENTUM, METER * MOMENTUM);
+        assert_eq!(TORQUE, METER * NEWTON);
+        assert_eq!(DENSITY, KILOGRAM / VOLUME);
+        assert_eq!(DYNAMIC_VISCOSITY, PASCAL * SECOND);
+        assert_eq!(KINEMATIC_VISCOSITY, DYNAMIC_VISCOSITY / DENSITY);
     }
 }

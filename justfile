@@ -1,12 +1,12 @@
 # Format code
 format:
-    cargo fmt --all
+    cargo +nightly fmt --all
     cargo sort
     cargo sort-derives
 
-# Check unused dependencies
+# Check unused dependencies (nightly only, run separately if needed)
 deps:
-    cargo udeps
+    cargo +nightly udeps
 
 # Check for errors
 check: && format

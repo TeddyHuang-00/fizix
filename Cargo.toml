@@ -11,8 +11,7 @@ keywords = ["units", "dimensions", "si", "const-generics", "type-safe"]
 categories = ["science", "no-std", "mathematics"]
 
 [package.metadata.msrv]
-# Requires nightly for generic_const_exprs
-nightly = true
+nightly = false
 
 [lib]
 crate-type = ["lib"]
@@ -22,7 +21,8 @@ default = ["std"]
 std = []
 
 [dependencies]
-paste = "1.0.15"
+paste = "1.0"
+typenum = "1.20"
 
 [profile.release]
 lto = true
