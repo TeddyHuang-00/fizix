@@ -136,28 +136,6 @@ macro_rules! impl_mul_div {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
-
-        impl<
-            const M: i8,
-            const G: i8,
-            const S: i8,
-            const A: i8,
-            const K: i8,
-            const O: i8,
-            const C: i8,
-            Vi,
-            V,
-        > $trait<Vi> for Unit<Vi, M, G, S, A, K, O, C>
-        where
-            Vi: $trait<Output = V>,
-        {
-            type Output = Unit<V, M, G, S, A, K, O, C>;
-
-            #[inline]
-            fn $fn(self, rhs: Vi) -> Self::Output {
-                Unit::new(self.value.$fn(rhs))
-            }
-        }
     };
 }
 
@@ -318,10 +296,10 @@ mod tests {
         let float: FloatScalar = 10.0.into();
         let int: IntScalar = 10.into();
 
-        let float_mul_lhs = float * 10.0;
-        let float_div_lhs = float / 10.0;
-        let int_mul_lhs = int * 10;
-        let int_div_lhs = int / 10;
+        let float_mul_lhs = float * 10.0.into();
+        let float_div_lhs = float / 10.0.into();
+        let int_mul_lhs = int * 10.into();
+        let int_div_lhs = int / 10.into();
 
         // Calculation should NOT change unit type
         assert_eq!(float_mul_lhs.type_id(), TYPE_FLOAT_SCALAR);
@@ -358,8 +336,8 @@ mod tests {
         let float = FloatScalar::new(10.0);
         let int = IntScalar::new(10);
 
-        assert!(float < float * 2.0);
-        assert!(int < int * 2);
+        assert!(float < float * 2.0.into());
+        assert!(int < int * 2.into());
 
         assert!(float == float);
         assert!(int == int);
@@ -452,10 +430,10 @@ mod tests {
         let float = FloatUnit::new(10.0);
         let int = IntUnit::new(10);
 
-        let float_mul_lhs = float * 10.0;
-        let float_div_lhs = float / 10.0;
-        let int_mul_lhs = int * 10;
-        let int_div_lhs = int / 10;
+        let float_mul_lhs = float * 10.0.into();
+        let float_div_lhs = float / 10.0.into();
+        let int_mul_lhs = int * 10.into();
+        let int_div_lhs = int / 10.into();
 
         // Calculation should NOT change unit type
         assert_eq!(float_mul_lhs.type_id(), TYPE_FLOAT_UNIT);
@@ -492,8 +470,8 @@ mod tests {
         let float = FloatUnit::new(10.0);
         let int = IntUnit::new(10);
 
-        assert!(float < float * 2.0);
-        assert!(int < int * 2);
+        assert!(float < float * 2.0.into());
+        assert!(int < int * 2.into());
 
         assert!(float == float);
         assert!(int == int);
