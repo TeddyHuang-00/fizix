@@ -22,6 +22,7 @@ default = ["std"]
 std = []
 
 [dependencies]
+identconv = "0.2.0"
 
 [profile.release]
 lto = true
