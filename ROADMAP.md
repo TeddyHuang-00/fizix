@@ -1,4 +1,4 @@
-# siunit — SI Units at Compile Time
+# siunit: SI Units at Compile Time
 
 **Compile-time checked SI units via [`typenum`](https://crates.io/crates/typenum) type-level integers.**
 Dimension mismatches caught at compile time, zero runtime overhead.
@@ -7,13 +7,13 @@ Dimension mismatches caught at compile time, zero runtime overhead.
 
 ## Status
 
-**v0.1.0** — 7 base dimensions (L, M, T, I, Θ, N, J).\
+**v0.1.0**: 7 base dimensions (L, M, T, I, Θ, N, J).\
 Works on **stable Rust** (edition 2024, ≥1.85).\
 Cross-crate usage confirmed.
 
 ## Roadmap
 
-### v0.1.x — Foundation ✅
+### v0.1.x: Foundation ✅
 
 - [x] `Unit<V, M, G, S, A, K, O, C>` struct with `typenum` type-level dimensions
 - [x] `Add`, `Sub`, `Mul`, `Div`, `Neg` operators
@@ -26,7 +26,7 @@ Cross-crate usage confirmed.
 - [x] Cross-crate operation support
 - [x] `cargo +stable test` passes (24 tests)
 
-### v0.2.x — Usability
+### v0.2.x: Usability
 
 - [ ] `Display` impl: pretty-print "5 m·s⁻²"
 - [ ] `From<f64>` / `Into<f64>` for dimensionless quantities
@@ -36,7 +36,7 @@ Cross-crate usage confirmed.
 - [ ] More unit aliases (Angstrom, LightYear, Parsec, etc. — via features)
 - [ ] `serde` feature for serialization
 
-### v1.0 — Maturity
+### v1.0: Maturity
 
 - [ ] Benchmark vs `uom` (compile time, binary size)
 - [ ] `generic_const_exprs` stabilization → optional const-generic backend

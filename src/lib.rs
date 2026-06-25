@@ -1,4 +1,4 @@
-//! **siunit** — Compile-time checked SI units via type-level integers.
+//! **siunit**: Compile-time checked SI units via type-level integers.
 //!
 //! Every physical quantity carries its dimension as [`typenum`] type
 //! parameters. Dimension mismatches are caught at compile time with zero

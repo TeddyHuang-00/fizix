@@ -8,13 +8,13 @@ use typenum::Z0;
 /// A physical quantity with compile-time dimension checking.
 ///
 /// Seven type parameters corresponding to the SI base dimensions for
-/// 1. length (Meter),
-/// 2. mass (kiloGram),
-/// 3. time (Second),
-/// 4. electric current (Ampere),
-/// 5. thermodynamic temperature (Kelvin),
-/// 6. amount of substance (mOle), and
-/// 7. luminous intensity (Candela)
+/// 1. length (meter),
+/// 2. mass (kilogram),
+/// 3. time (second),
+/// 4. electric current (ampere),
+/// 5. thermodynamic temperature (kelvin),
+/// 6. amount of substance (mole), and
+/// 7. luminous intensity (candela)
 ///
 /// Dimension arithmetic is performed using [`typenum`] type-level integers.
 ///
@@ -23,33 +23,33 @@ use typenum::Z0;
 /// ```
 /// use siunit::Unit;
 ///
-/// let d: Unit<f64, typenum::consts::P1> = Unit::new(5.0); // metres
+/// let d: Unit<f64, typenum::consts::P1> = Unit::new(5.0); // 5.0 kg
 /// assert_eq!(d.value, 5.0);
 /// ```
 #[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Unit<
     V,
-    // Length exponent (Meter)
+    // Mass exponent (kilogram)
     M = Z0,
-    // Mass exponent (kiloGram)
-    G = Z0,
-    // Time exponent (Second)
-    S = Z0,
-    // Current exponent (Ampere)
-    A = Z0,
-    // Temperature exponent (Kelvin)
+    // Length exponent (meter)
+    L = Z0,
+    // Time exponent (second)
+    T = Z0,
+    // Current exponent (ampere)
+    I = Z0,
+    // Temperature exponent (kelvin)
     K = Z0,
-    // Amount exponent (mOle)
-    O = Z0,
-    // Intensity exponent (Candela)
-    C = Z0,
+    // Amount exponent (mole)
+    N = Z0,
+    // Intensity exponent (candela)
+    J = Z0,
 > {
     /// The numeric value of this quantity.
     pub value: V,
-    _phantom: PhantomData<(M, G, S, A, K, O, C)>,
+    _phantom: PhantomData<(M, L, T, I, K, N, J)>,
 }
 
-impl<V, M, G, S, A, K, O, C> Unit<V, M, G, S, A, K, O, C> {
+impl<V, M, L, T, I, K, N, J> Unit<V, M, L, T, I, K, N, J> {
     /// Create a new quantity with the given numeric value.
     #[inline]
     #[must_use]
@@ -68,14 +68,14 @@ impl<V> From<V> for Unit<V> {
     }
 }
 
-// Add / Sub — same type
+// Add / Sub: same type
 macro_rules! impl_add_sub {
     ($trait:ident, $fn:ident) => {
-        impl<U, V, M, G, S, A, K, O, C> $trait for Unit<U, M, G, S, A, K, O, C>
+        impl<U, V, M, L, T, I, K, N, J> $trait for Unit<U, M, L, T, I, K, N, J>
         where
             U: $trait<Output = V>,
         {
-            type Output = Unit<V, M, G, S, A, K, O, C>;
+            type Output = Unit<V, M, L, T, I, K, N, J>;
 
             #[inline]
             fn $fn(self, rhs: Self) -> Self::Output {
@@ -88,34 +88,34 @@ macro_rules! impl_add_sub {
 impl_add_sub!(Add, add);
 impl_add_sub!(Sub, sub);
 
-// Mul / Div — dimension exponents addition/subtraction
+// Mul / Div: dimension exponents addition/subtraction
 macro_rules! impl_mul_div {
     ($trait:ident, $fn:ident, $op_trait:ident) => {
-        impl<U, V, M1, G1, S1, A1, K1, O1, C1, M2, G2, S2, A2, K2, O2, C2>
-            $trait<Unit<U, M2, G2, S2, A2, K2, O2, C2>> for Unit<U, M1, G1, S1, A1, K1, O1, C1>
+        impl<U, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2>
+            $trait<Unit<U, M2, L2, T2, I2, K2, N2, J2>> for Unit<U, M1, L1, T1, I1, K1, N1, J1>
         where
             U: $trait<Output = V>,
             M1: $op_trait<M2>,
-            G1: $op_trait<G2>,
-            S1: $op_trait<S2>,
-            A1: $op_trait<A2>,
+            L1: $op_trait<L2>,
+            T1: $op_trait<T2>,
+            I1: $op_trait<I2>,
             K1: $op_trait<K2>,
-            O1: $op_trait<O2>,
-            C1: $op_trait<C2>,
+            N1: $op_trait<N2>,
+            J1: $op_trait<J2>,
         {
             type Output = Unit<
                 V,
                 <M1 as $op_trait<M2>>::Output,
-                <G1 as $op_trait<G2>>::Output,
-                <S1 as $op_trait<S2>>::Output,
-                <A1 as $op_trait<A2>>::Output,
+                <L1 as $op_trait<L2>>::Output,
+                <T1 as $op_trait<T2>>::Output,
+                <I1 as $op_trait<I2>>::Output,
                 <K1 as $op_trait<K2>>::Output,
-                <O1 as $op_trait<O2>>::Output,
-                <C1 as $op_trait<C2>>::Output,
+                <N1 as $op_trait<N2>>::Output,
+                <J1 as $op_trait<J2>>::Output,
             >;
 
             #[inline]
-            fn $fn(self, rhs: Unit<U, M2, G2, S2, A2, K2, O2, C2>) -> Self::Output {
+            fn $fn(self, rhs: Unit<U, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
@@ -125,12 +125,12 @@ macro_rules! impl_mul_div {
 impl_mul_div!(Mul, mul, Add);
 impl_mul_div!(Div, div, Sub);
 
-// Neg — value negation, dimensions unchanged
-impl<U, V, M, G, S, A, K, O, C> Neg for Unit<U, M, G, S, A, K, O, C>
+// Neg: value negation, dimensions unchanged
+impl<U, V, M, L, T, I, K, N, J> Neg for Unit<U, M, L, T, I, K, N, J>
 where
     U: Neg<Output = V>,
 {
-    type Output = Unit<V, M, G, S, A, K, O, C>;
+    type Output = Unit<V, M, L, T, I, K, N, J>;
 
     #[inline]
     fn neg(self) -> Self::Output {
