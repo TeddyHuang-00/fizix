@@ -78,4 +78,12 @@ mod tests {
     fn test_const() {
         assert_eq!(SCALAR.type_id(), TypeId::of::<Unit<f64>>());
     }
+
+    #[test]
+    fn test_derived() {
+        // Type inference on this "long" calculation will simply take too long
+        // to finish
+
+        // assert_eq!(NEWTON, KILOGRAM * METER / SECOND / SECOND);
+    }
 }
