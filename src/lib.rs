@@ -23,6 +23,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 mod dim;
+mod macros;
 mod units;
 
 pub use dim::Unit;
