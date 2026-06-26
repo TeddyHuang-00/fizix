@@ -115,9 +115,9 @@ alias_types! {
     pub Luminance               => ("(cd⋅m⁻²)",       _, N3,  _,  _,  _,  _, P1),
 }
 
-#[cfg(all(test, feature = "std"))]
+#[cfg(test)]
 mod tests {
-    use std::any::{Any, TypeId};
+    use core::any::TypeId;
 
     use super::*;
     use crate::Unit;
@@ -137,18 +137,18 @@ mod tests {
 
     #[test]
     fn test_struct() {
-        assert_eq!(TypeId::of::<Scalar<f64>>(), TypeId::of::<Unit<f64>>());
-        assert_eq!(Scalar::new(1.0f64).type_id(), TypeId::of::<Unit<f64>>());
+        let _: Unit<f64> = Scalar::new(1.0f64);
+        let _: Unit<f64> = Scalar::new(1.0f64);
     }
 
     #[test]
     fn test_fn() {
-        assert_eq!(scalar(1.0f64).type_id(), TypeId::of::<Unit<f64>>());
+        let _: Unit<f64> = scalar(1.0f64);
     }
 
     #[test]
     fn test_const() {
-        assert_eq!(SCALAR.type_id(), TypeId::of::<Unit<f64>>());
+        let _: Unit<f64> = SCALAR;
     }
 
     #[test]
@@ -179,5 +179,16 @@ mod tests {
     #[test]
     fn test_derived_type() {
         assert_eq!(eval!(Speed), eval!(Meter / Second));
+    }
+
+    #[test]
+    fn test_underscore_aliases() {
+        let _: Meter<f64> = Meter::new(1.0);
+        let _: Kilogram<f64> = Kilogram::new(1.0);
+        // Verify Scalar (all _) equals Unit with all Z0
+        assert_eq!(
+            TypeId::of::<Scalar<f64>>(),
+            TypeId::of::<Unit<f64>>()
+        );
     }
 }
