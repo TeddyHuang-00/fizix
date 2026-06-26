@@ -3,7 +3,7 @@ use core::{
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
-use typenum::Z0;
+use typenum::{Integer, Z0};
 
 /// A physical quantity with compile-time dimension checking.
 ///
@@ -49,7 +49,16 @@ pub struct Unit<
     _phantom: PhantomData<(M, L, T, I, K, N, J)>,
 }
 
-impl<V, M, L, T, I, K, N, J> Unit<V, M, L, T, I, K, N, J> {
+impl<V, M, L, T, I, K, N, J> Unit<V, M, L, T, I, K, N, J>
+where
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
+{
     /// Create a new quantity with the given numeric value.
     #[inline]
     #[must_use]
@@ -74,6 +83,13 @@ macro_rules! impl_add_sub {
         impl<U, V, M, L, T, I, K, N, J> $trait for Unit<U, M, L, T, I, K, N, J>
         where
             U: $trait<Output = V>,
+            M: Integer,
+            L: Integer,
+            T: Integer,
+            I: Integer,
+            K: Integer,
+            N: Integer,
+            J: Integer,
         {
             type Output = Unit<V, M, L, T, I, K, N, J>;
 
@@ -91,28 +107,26 @@ impl_add_sub!(Sub, sub);
 // Mul / Div: dimension exponents addition/subtraction
 macro_rules! impl_mul_div {
     ($trait:ident, $fn:ident, $op_trait:ident) => {
-        impl<U, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2>
+        impl<U, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
             $trait<Unit<U, M2, L2, T2, I2, K2, N2, J2>> for Unit<U, M1, L1, T1, I1, K1, N1, J1>
         where
             U: $trait<Output = V>,
-            M1: $op_trait<M2>,
-            L1: $op_trait<L2>,
-            T1: $op_trait<T2>,
-            I1: $op_trait<I2>,
-            K1: $op_trait<K2>,
-            N1: $op_trait<N2>,
-            J1: $op_trait<J2>,
+            M1: $op_trait<M2, Output = M>,
+            L1: $op_trait<L2, Output = L>,
+            T1: $op_trait<T2, Output = T>,
+            I1: $op_trait<I2, Output = I>,
+            K1: $op_trait<K2, Output = K>,
+            N1: $op_trait<N2, Output = N>,
+            J1: $op_trait<J2, Output = J>,
+            M: Integer,
+            L: Integer,
+            T: Integer,
+            I: Integer,
+            K: Integer,
+            N: Integer,
+            J: Integer,
         {
-            type Output = Unit<
-                V,
-                <M1 as $op_trait<M2>>::Output,
-                <L1 as $op_trait<L2>>::Output,
-                <T1 as $op_trait<T2>>::Output,
-                <I1 as $op_trait<I2>>::Output,
-                <K1 as $op_trait<K2>>::Output,
-                <N1 as $op_trait<N2>>::Output,
-                <J1 as $op_trait<J2>>::Output,
-            >;
+            type Output = Unit<V, M, L, T, I, K, N, J>;
 
             #[inline]
             fn $fn(self, rhs: Unit<U, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
@@ -129,6 +143,13 @@ impl_mul_div!(Div, div, Sub);
 impl<U, V, M, L, T, I, K, N, J> Neg for Unit<U, M, L, T, I, K, N, J>
 where
     U: Neg<Output = V>,
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
 {
     type Output = Unit<V, M, L, T, I, K, N, J>;
 
