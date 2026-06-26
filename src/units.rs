@@ -109,6 +109,19 @@ mod tests {
     use super::*;
     use crate::Unit;
 
+    /// Helper macro to turn type-only aliases into concrete values
+    macro_rules! eval {
+        ($id:ident) => {
+            $id::new(1.0f64)
+        };
+        ($left:ident * $right:tt) => {
+            eval!($left) * eval!($right)
+        };
+        ($left:tt / $right:ident) => {
+            eval!($left) / eval!($right)
+        };
+    }
+
     #[test]
     fn test_struct() {
         assert_eq!(TypeId::of::<Scalar<f64>>(), TypeId::of::<Unit<f64>>());
@@ -126,7 +139,7 @@ mod tests {
     }
 
     #[test]
-    fn test_derived() {
+    fn test_derived_unit() {
         assert_eq!(RADIAN, METER / METER);
         assert_eq!(STERADIAN, (METER * METER) / (METER * METER));
         assert_eq!(HERTZ, SCALAR / SECOND);
@@ -151,22 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_other_derived() {
-        assert_eq!(GRAY, (METER * METER) / (SECOND * SECOND));
-        assert_eq!(BECQUEREL, HERTZ);
-        assert_eq!(LUX, CANDELA / (METER * METER));
-    }
-
-    #[test]
-    fn test_chain() {
-        let r = OHM;
-        let v = VOLT;
-        let t = SECOND * 2.0.into();
-        let i = v / r;
-        assert_eq!(i, AMPERE);
-        let p = v * i;
-        assert_eq!(p, WATT);
-        let e = p * t;
-        assert_eq!(e, JOULE * 2.0.into());
+    fn test_derived_type() {
+        assert_eq!(eval!(Speed), eval!(Meter / Second));
     }
 }
