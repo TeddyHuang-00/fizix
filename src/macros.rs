@@ -32,38 +32,23 @@
 /// ```
 #[macro_export]
 macro_rules! alias_types {
-    (@inner []) => { $crate::Unit<V> };
+    // Resolver helpers: map a single dimension token to its $crate:: path
+    (@typename _) => { $crate::Z0 };
+    (@typename $x:ident) => { $crate::$x };
 
-    (@inner [$($tt:tt)*]) => { $crate::alias_types!(@inner [], $($tt)*) };
-
-    (@inner [$($e:ident),*], _) => {
-        $crate::Unit<V, $($e,)* Z0>
-    };
-
-    (@inner [$($e:ident),*], $next:ident) => {
-        $crate::Unit<V, $($e,)* $next>
-    };
-
-    (@inner [$($e:ident),*], _, $($tt:tt)*) => {
-        $crate::alias_types!(@inner [$($e,)* Z0], $($tt)*)
-    };
-
-    (@inner [$($e:ident),*], $next:ident, $($tt:tt)*) => {
-        $crate::alias_types!(@inner [$($e,)* $next], $($tt)*)
-    };
-
+    // Single entry
     ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
-        #[allow(unused_imports)]
-        use $crate::__typ::*;
         #[doc = $doc]
-        $pre type $name<V> = $crate::alias_types!(@inner [$($dim),*]);
+        $pre type $name<V> = $crate::Unit<V $(, $crate::alias_types!(@typename $dim))*>;
     };
 
+    // Alternative names (aliases)
     ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:tt)*)$(,)?) => {
         alias_types! { $pre $name => ($doc $(, $dim)*) }
         alias_types! { $($pres $names)|+ => ($doc $(, $dim)*) }
     };
 
+    // Multiple entries
     (
         $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:tt)*),
         $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:tt)*)),+$(,)?
