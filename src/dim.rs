@@ -163,7 +163,7 @@ where
 mod tests {
     use std::any::{Any, TypeId};
 
-    use typenum::{P1, P2, P3, P4, P5, P6, P7, P8, P10, P12, P14};
+    use typenum::{N6, P1, P2, P3, P4, P5, P6, P7, P8, P10, P12, P14};
 
     use super::*;
 
@@ -404,5 +404,22 @@ mod tests {
         assert!(int < int * 2.into());
         assert!(float == float);
         assert!(int == int);
+    }
+
+    #[test]
+    fn test_chained() {
+        let kg: Unit<_, P1> = Unit::new(1.0);
+        let meter: Unit<_, Z0, P1> = Unit::new(1.0);
+        let sec: Unit<_, Z0, Z0, P1> = Unit::new(1.0);
+
+        let x: Unit<_> = Unit::new(1.0);
+        let x = x * kg * meter / sec;
+        let x = x * kg / meter / sec;
+        let x = x * kg * meter / sec;
+        let x = x * kg / meter / sec;
+        let x = x * kg * meter / sec;
+        let x = x * kg / meter / sec;
+
+        assert_eq!(x.type_id(), TypeId::of::<Unit<f64, P6, Z0, N6>>());
     }
 }
