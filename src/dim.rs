@@ -362,5 +362,4 @@ mod tests {
 
         let _: Unit<f64, P6, Z0, N6> = x;
     }
-
 }

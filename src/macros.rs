@@ -114,9 +114,11 @@ macro_rules! alias_units {
 
 #[cfg(test)]
 mod tests {
-    use crate::Unit;
     use core::any::TypeId;
+
     use typenum::{P1, Z0};
+
+    use crate::Unit;
 
     alias_types! {
         pub TestScalar => ("test all underscores"),

@@ -186,9 +186,6 @@ mod tests {
         let _: Meter<f64> = Meter::new(1.0);
         let _: Kilogram<f64> = Kilogram::new(1.0);
         // Verify Scalar (all _) equals Unit with all Z0
-        assert_eq!(
-            TypeId::of::<Scalar<f64>>(),
-            TypeId::of::<Unit<f64>>()
-        );
+        assert_eq!(TypeId::of::<Scalar<f64>>(), TypeId::of::<Unit<f64>>());
     }
 }

@@ -38,9 +38,6 @@ pub mod __typ {
 /// so error messages show clean paths like `siunit::Z0` instead of
 /// `siunit::__typ::Z0`.
 #[doc(inline)]
-pub use __typ::{
-    Integer, N1, N2, N3, N4, N5, N6, N7, N8, P1, P2, P3, P4, P5, P6, P7, P8, Z0,
-};
-
+pub use __typ::{Integer, N1, N2, N3, N4, N5, N6, N7, N8, P1, P2, P3, P4, P5, P6, P7, P8, Z0};
 pub use dim::Unit;
 pub use units::*;
