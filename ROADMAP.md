@@ -15,7 +15,7 @@ Cross-crate usage confirmed.
 
 ### v0.1.x: Foundation ✅
 
-- [x] `Unit<V, M, G, S, A, K, O, C>` struct with `typenum` type-level dimensions
+- [x] `Unit<V, M, L, T, I, K, N, J>` struct with `typenum` type-level dimensions
 - [x] `Add`, `Sub`, `Mul`, `Div`, `Neg` operators
 - [x] SI base unit aliases (Meter, Kilogram, Second, Ampere, Kelvin, Mole, Candela)
 - [x] SI derived unit aliases (Newton, Joule, Watt, Pascal, Hertz)
