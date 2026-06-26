@@ -2,7 +2,7 @@
 ///
 /// # Uses
 ///
-/// Unlike `alias_units`, this macro WON'T create const and helper functions.
+/// Unlike `alias_units`, this macro will NOT create const and helper functions.
 /// This is useful when creating aliases that are only meant for type annotation
 /// and type checks rather than acting as a valid named unit.
 ///
