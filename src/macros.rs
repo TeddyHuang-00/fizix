@@ -12,8 +12,8 @@
 /// use siunit::alias_types;
 ///
 /// alias_types! {
-///     pub PureValue => ("Some custom scalar type", _, _, P1),
-///     NameA | NameB => ("Same unit with two different aliases"),
+///     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+///     NameA | NameB => ("Same unit with two different aliases", P1),
 /// }
 /// let _ = PureValue::new(0usize);
 /// ```
@@ -24,8 +24,8 @@
 /// # use siunit::alias_types;
 ///
 /// # alias_types! {
-/// #     pub PureValue => ("Some custom scalar type", _, _, P1),
-/// #     NameA | NameB => ("Same unit with two different aliases"),
+/// #     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+/// #     NameA | NameB => ("Same unit with two different aliases", P1),
 /// # }
 /// let _ = pure_value(0usize);
 /// let _ = PURE_VALUE;
@@ -73,8 +73,8 @@ macro_rules! alias_types {
 /// use siunit::alias_units;
 ///
 /// alias_units! {
-///     pub PureValue => ("Some custom scalar type", _, _, P1),
-///     NameA | NameB => ("Same unit with two different aliases"),
+///     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+///     NameA | NameB => ("Same unit with two different aliases", P1),
 /// }
 ///
 /// let _ = PureValue::new(0usize);
