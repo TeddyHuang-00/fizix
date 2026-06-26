@@ -1,49 +1,115 @@
-use paste::paste;
 use typenum::{N1, N2, N3, N4, P1, P2, P3, P4, Z0};
 
-use crate::Unit;
-
-/// Create `Unit` type aliases and populate const and helper functions
+/// Create `Unit` type aliases only.
+///
+/// # Uses
+///
+/// Unlike `alias_units`, this macro WON'T create const and helper functions.
+/// This is useful when creating aliases that are only meant for type annotation
+/// and type checks rather than acting as a valid named unit.
 ///
 /// # Examples
 ///
 /// ```
+/// use siunit::alias_types;
+/// use typenum::P1;
+///
+/// alias_types! {
+///     (pub PureValue, "Some custom scalar type"),
+///     (NameA | NameB, "Other custom type with two different aliases", P1),
+/// }
+/// let _ = PureValue::new(0usize);
+/// ```
+///
+/// but we don't have constant and helper functions:
+///
+/// ```compile_fail
+/// # use siunit::alias_types;
+/// # use typenum::P1;
+///
+/// # alias_types! {
+/// #     (pub PureValue, "Some custom scalar type"),
+/// #     (NameA | NameB, "Same unit with two different aliases", P1),
+/// # }
+/// let _ = pure_value(0usize);
+/// let _ = PURE_VALUE;
+/// ```
+#[macro_export]
+macro_rules! alias_types {
+    (($(|)?$pre:vis $name:ident, $doc:literal $(, $dim:ty)*)$(,)?) => {
+        paste::paste! {
+            #[doc = $doc]
+            $pre type $name<V> = $crate::Unit<V, $($dim),*>;
+        }
+    };
+
+    (($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+, $doc:literal $(, $dim:ty)*)$(,)?) => {
+        alias_types! { ($pre $name, $doc $(, $dim)*) }
+        alias_types! { ($($pres $names)|+, $doc $(, $dim)*) }
+    };
+
+    (
+        ($(|)?$($pre:vis $name:ident)|+, $doc:literal $(, $dim:ty)*),
+        $(($(|)?$($pres:vis $names:ident)|+, $docs:literal $(, $dims:ty)*)),+$(,)?
+    ) => {
+        alias_types! { ($($pre $name)|+, $doc $(, $dim)*) }
+        alias_types! { $(($($pres $names)|+, $docs $(, $dims)*)),+ }
+    }
+}
+
+/// Create `Unit` type aliases and populate const and helper functions.
+///
+/// # Uses
+///
+/// For desired `TypeAlias`, this creates:
+/// - `TypeAlias`: a `type` with only one generic of data type
+/// - `type_alias`: a `fn` that takes any value and wraps it in `TypeAlias`
+/// - `TYPE_ALIAS`: a `const` of `TypeAlias` with value of `1.0f64`
+///
+/// # Examples
+///
+/// ```
+/// use siunit::alias_units;
 /// use typenum::P1;
 ///
 /// alias_units! {
-///     (PureValue, "Some custom scalar type"),
-///     (NameA | NameB, "Other custom type with two different aliases", P1),
+///     (pub PureValue, "Some custom scalar type"),
+///     (NameA | NameB, "Same unit with two different aliases", P1),
 /// }
+///
+/// let _ = PureValue::new(0usize);
+/// let _ = name_a(0usize);
+/// let _ = NAME_B; // constants use f64
 /// ```
 #[macro_export]
 macro_rules! alias_units {
-    (($(|)?$name:ident, $doc:literal, $($dim:ty),*)$(,)?) => {
-        paste! {
+    (($(|)?$pre:vis $name:ident, $doc:literal $(, $dim:ty)*)$(,)?) => {
+        paste::paste! {
             #[doc = $doc]
-            pub type $name<V> = Unit<V, $($dim),*>;
+            $pre type $name<V> = $crate::Unit<V, $($dim),*>;
 
             #[doc = $doc]
             #[inline]
-            pub const fn [<$name:snake>]<V>(v: V) -> $name<V> {
+            $pre const fn [<$name:snake>]<V>(v: V) -> $name<V> {
                 $name::new(v)
             }
 
             #[doc = $doc]
-            pub const [<$name:snake:upper>]: $name<f64> = $name::new(1.0);
+            $pre const [<$name:snake:upper>]: $name<f64> = $name::new(1.0);
         }
     };
 
-    (($(|)?$name:ident|$($names:ident)|+, $doc:literal, $($dim:ty),*)$(,)?) => {
-        alias_units! { ($name, $doc, $($dim),*) }
-        alias_units! { ($($names)|+, $doc, $($dim),*) }
+    (($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+, $doc:literal $(, $dim:ty)*)$(,)?) => {
+        alias_units! { ($pre $name, $doc $(, $dim)*) }
+        alias_units! { ($($pres $names)|+, $doc $(, $dim)*) }
     };
 
     (
-        ($(|)?$($name:ident)|+, $doc:literal, $($dim:ty),*),
-        $(($(|)?$($names:ident)|+, $docs:literal, $($dims:ty),*)),+$(,)?
+        ($(|)?$($pre:vis $name:ident)|+, $doc:literal $(, $dim:ty)*),
+        $(($(|)?$($pres:vis $names:ident)|+, $docs:literal $(, $dims:ty)*)),+$(,)?
     ) => {
-        alias_units! { ($($name)|+, $doc, $($dim),*) }
-        alias_units! { $(($($names)|+, $docs, $($dims),*)),+ }
+        alias_units! { ($($pre $name)|+, $doc $(, $dim)*) }
+        alias_units! { $(($($pres $names)|+, $docs $(, $dims)*)),+ }
     }
 }
 
@@ -152,6 +218,7 @@ mod tests {
     use std::any::{Any, TypeId};
 
     use super::*;
+    use crate::Unit;
 
     #[test]
     fn test_struct() {
