@@ -111,3 +111,26 @@ macro_rules! alias_units {
         alias_units! { $($($pres $names)|+ => ($docs $(, $dims)*)),+ }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::Unit;
+    use core::any::TypeId;
+    use typenum::{P1, Z0};
+
+    alias_types! {
+        pub TestScalar => ("test all underscores"),
+        pub TestMeter => ("test with mixed _ and P1 in meter position", _, P1),
+    }
+
+    #[test]
+    fn test_underscore_expands_to_z0() {
+        // All _ → all Z0 defaults (Unit<f64> = Unit<f64, Z0, Z0, Z0, Z0, Z0, Z0, Z0>)
+        assert_eq!(TypeId::of::<TestScalar<f64>>(), TypeId::of::<Unit<f64>>());
+        // _ in mass position → Z0, P1 in length position → P1
+        assert_eq!(
+            TypeId::of::<TestMeter<f64>>(),
+            TypeId::of::<Unit<f64, Z0, P1>>()
+        );
+    }
+}
