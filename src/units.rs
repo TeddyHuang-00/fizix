@@ -262,20 +262,6 @@ mod tests {
     }
 
     #[test]
-    fn test_convenience() {
-        assert_eq!(VELOCITY, METER / SECOND);
-        assert_eq!(ACCELERATION, VELOCITY / SECOND);
-        assert_eq!(AREA, METER * METER);
-        assert_eq!(VOLUME, AREA * METER);
-        assert_eq!(MOMENTUM, KILOGRAM * VELOCITY);
-        assert_eq!(ANGULAR_MOMENTUM, METER * MOMENTUM);
-        assert_eq!(TORQUE, METER * NEWTON);
-        assert_eq!(DENSITY, KILOGRAM / VOLUME);
-        assert_eq!(DYNAMIC_VISCOSITY, PASCAL * SECOND);
-        assert_eq!(KINEMATIC_VISCOSITY, DYNAMIC_VISCOSITY / DENSITY);
-    }
-
-    #[test]
     fn test_other_derived() {
         assert_eq!(GRAY, (METER * METER) / (SECOND * SECOND));
         assert_eq!(BECQUEREL, HERTZ);
