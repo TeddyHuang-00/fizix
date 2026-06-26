@@ -10,11 +10,11 @@
 ///
 /// ```
 /// use siunit::alias_types;
-/// use typenum::P1;
+/// use typenum::{P1, Z0};
 ///
 /// alias_types! {
-///     pub PureValue => ("Some custom scalar type"),
-///     NameA | NameB => ("Other custom type with two different aliases", P1),
+///     pub PureValue => ("Some custom scalar type", _, _, P1),
+///     NameA | NameB => ("Same unit with two different aliases"),
 /// }
 /// let _ = PureValue::new(0usize);
 /// ```
@@ -23,30 +23,50 @@
 ///
 /// ```compile_fail
 /// # use siunit::alias_types;
-/// # use typenum::P1;
+/// # use typenum::{P1, Z0};
 ///
 /// # alias_types! {
-/// #     pub PureValue => ("Some custom scalar type"),
-/// #     NameA | NameB => ("Same unit with two different aliases", P1),
+/// #     pub PureValue => ("Some custom scalar type", _, _, P1),
+/// #     NameA | NameB => ("Same unit with two different aliases"),
 /// # }
 /// let _ = pure_value(0usize);
 /// let _ = PURE_VALUE;
 /// ```
 #[macro_export]
 macro_rules! alias_types {
-    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:ty)*)$(,)?) => {
-        #[doc = $doc]
-        $pre type $name<V> = $crate::Unit<V, $($dim),*>;
+    (@inner []) => { $crate::Unit<V> };
+
+    (@inner [$($tt:tt)*]) => { $crate::alias_types!(@inner [], $($tt)*) };
+
+    (@inner [$($e:ident),*], _) => {
+        $crate::Unit<V, $($e,)* Z0>
     };
 
-    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:ty)*)$(,)?) => {
+    (@inner [$($e:ident),*], $next:ident) => {
+        $crate::Unit<V, $($e,)* $next>
+    };
+
+    (@inner [$($e:ident),*], _, $($tt:tt)*) => {
+        $crate::alias_types!(@inner [$($e,)* Z0], $($tt)*)
+    };
+
+    (@inner [$($e:ident),*], $next:ident, $($tt:tt)*) => {
+        $crate::alias_types!(@inner [$($e,)* $next], $($tt)*)
+    };
+
+    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+        #[doc = $doc]
+        $pre type $name<V> = $crate::alias_types!(@inner [$($dim),*]);
+    };
+
+    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:tt)*)$(,)?) => {
         alias_types! { $pre $name => ($doc $(, $dim)*) }
         alias_types! { $($pres $names)|+ => ($doc $(, $dim)*) }
     };
 
     (
-        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:ty)*),
-        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:ty)*)),+$(,)?
+        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:tt)*),
+        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:tt)*)),+$(,)?
     ) => {
         alias_types! { $($pre $name)|+ => ($doc $(, $dim)*) }
         alias_types! { $($($pres $names)|+ => ($docs $(, $dims)*)),+ }
@@ -66,11 +86,11 @@ macro_rules! alias_types {
 ///
 /// ```
 /// use siunit::alias_units;
-/// use typenum::P1;
+/// use typenum::{P1, Z0};
 ///
 /// alias_units! {
-///     pub PureValue => ("Some custom scalar type"),
-///     NameA | NameB => ("Same unit with two different aliases", P1),
+///     pub PureValue => ("Some custom scalar type", _, _, P1),
+///     NameA | NameB => ("Same unit with two different aliases"),
 /// }
 ///
 /// let _ = PureValue::new(0usize);
@@ -79,7 +99,7 @@ macro_rules! alias_types {
 /// ```
 #[macro_export]
 macro_rules! alias_units {
-    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:ty)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
         $crate::alias_types! { $pre $name => ($doc $(, $dim)*) }
 
         paste::paste! {
@@ -94,14 +114,14 @@ macro_rules! alias_units {
         }
     };
 
-    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:ty)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:tt)*)$(,)?) => {
         alias_units! { $pre $name => ($doc $(, $dim)*) }
         alias_units! { $($pres $names)|+ => ($doc $(, $dim)*) }
     };
 
     (
-        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:ty)*),
-        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:ty)*)),+$(,)?
+        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:tt)*),
+        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:tt)*)),+$(,)?
     ) => {
         alias_units! { $($pre $name)|+ => ($doc $(, $dim)*) }
         alias_units! { $($($pres $names)|+ => ($docs $(, $dims)*)),+ }
