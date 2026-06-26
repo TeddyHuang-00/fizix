@@ -1,5 +1,3 @@
-use typenum::{N1, N2, N3, N4, P1, P2, P3, P4, Z0};
-
 use crate::{alias_types, alias_units};
 
 // base units

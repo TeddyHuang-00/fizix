@@ -10,7 +10,6 @@
 ///
 /// ```
 /// use siunit::alias_types;
-/// use typenum::{P1, Z0};
 ///
 /// alias_types! {
 ///     pub PureValue => ("Some custom scalar type", _, _, P1),
@@ -23,7 +22,6 @@
 ///
 /// ```compile_fail
 /// # use siunit::alias_types;
-/// # use typenum::{P1, Z0};
 ///
 /// # alias_types! {
 /// #     pub PureValue => ("Some custom scalar type", _, _, P1),
@@ -55,6 +53,8 @@ macro_rules! alias_types {
     };
 
     ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+        #[allow(unused_imports)]
+        use $crate::__typ::*;
         #[doc = $doc]
         $pre type $name<V> = $crate::alias_types!(@inner [$($dim),*]);
     };
@@ -86,7 +86,6 @@ macro_rules! alias_types {
 ///
 /// ```
 /// use siunit::alias_units;
-/// use typenum::{P1, Z0};
 ///
 /// alias_units! {
 ///     pub PureValue => ("Some custom scalar type", _, _, P1),
