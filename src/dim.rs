@@ -7,14 +7,14 @@ use typenum::{Integer, Z0};
 
 /// A physical quantity with compile-time dimension checking.
 ///
-/// Seven type parameters corresponding to the SI base dimensions for
-/// 1. length (meter),
-/// 2. mass (kilogram),
+/// Seven type parameters (after `V`) corresponding to the SI base dimensions for
+/// 1. mass (kilogram),
+/// 2. length (meter),
 /// 3. time (second),
 /// 4. electric current (ampere),
 /// 5. thermodynamic temperature (kelvin),
 /// 6. amount of substance (mole), and
-/// 7. luminous intensity (candela)
+/// 7. luminous intensity (candela).
 ///
 /// Dimension arithmetic is performed using [`typenum`] type-level integers.
 ///
