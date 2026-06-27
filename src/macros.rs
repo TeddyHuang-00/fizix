@@ -10,9 +10,10 @@
 ///
 /// ```
 /// use siunit::alias_types;
+/// use typenum::P1;
 ///
 /// alias_types! {
-///     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+///     pub PureValue => ("Some custom scalar type"),
 ///     NameA | NameB => ("Same unit with two different aliases", P1),
 /// }
 /// let _ = PureValue::new(0usize);
@@ -22,9 +23,10 @@
 ///
 /// ```compile_fail
 /// # use siunit::alias_types;
+/// # use typenum::P1;
 ///
 /// # alias_types! {
-/// #     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+/// #     pub PureValue => ("Some custom scalar type"),
 /// #     NameA | NameB => ("Same unit with two different aliases", P1),
 /// # }
 /// let _ = pure_value(0usize);
@@ -32,26 +34,22 @@
 /// ```
 #[macro_export]
 macro_rules! alias_types {
-    // Resolver helpers: map a single dimension token to its $crate:: path
-    (@typename _) => { $crate::Z0 };
-    (@typename $x:ident) => { $crate::$x };
-
     // Single entry
-    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:path)*)$(,)?) => {
         #[doc = $doc]
-        $pre type $name<V> = $crate::Unit<V $(, $crate::alias_types!(@typename $dim))*>;
+        $pre type $name<V> = $crate::Unit<V, $($dim),*>;
     };
 
     // Alternative names (aliases)
-    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:path)*)$(,)?) => {
         alias_types! { $pre $name => ($doc $(, $dim)*) }
         alias_types! { $($pres $names)|+ => ($doc $(, $dim)*) }
     };
 
     // Multiple entries
     (
-        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:tt)*),
-        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:tt)*)),+$(,)?
+        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:path)*),
+        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:path)*)),+$(,)?
     ) => {
         alias_types! { $($pre $name)|+ => ($doc $(, $dim)*) }
         alias_types! { $($($pres $names)|+ => ($docs $(, $dims)*)),+ }
@@ -71,9 +69,10 @@ macro_rules! alias_types {
 ///
 /// ```
 /// use siunit::alias_units;
+/// use typenum::P1;
 ///
 /// alias_units! {
-///     pub PureValue => ("Some custom scalar type", _, _, _, _, _, _, _),
+///     pub PureValue => ("Some custom scalar type"),
 ///     NameA | NameB => ("Same unit with two different aliases", P1),
 /// }
 ///
@@ -83,7 +82,7 @@ macro_rules! alias_types {
 /// ```
 #[macro_export]
 macro_rules! alias_units {
-    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:path)*)$(,)?) => {
         $crate::alias_types! { $pre $name => ($doc $(, $dim)*) }
 
         paste::paste! {
@@ -98,14 +97,14 @@ macro_rules! alias_units {
         }
     };
 
-    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:tt)*)$(,)?) => {
+    ($(|)?$pre:vis $name:ident|$($pres:vis $names:ident)|+ => ($doc:literal $(, $dim:path)*)$(,)?) => {
         alias_units! { $pre $name => ($doc $(, $dim)*) }
         alias_units! { $($pres $names)|+ => ($doc $(, $dim)*) }
     };
 
     (
-        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:tt)*),
-        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:tt)*)),+$(,)?
+        $(|)?$($pre:vis $name:ident)|+ => ($doc:literal $(, $dim:path)*),
+        $($(|)?$($pres:vis $names:ident)|+ => ($docs:literal $(, $dims:path)*)),+$(,)?
     ) => {
         alias_units! { $($pre $name)|+ => ($doc $(, $dim)*) }
         alias_units! { $($($pres $names)|+ => ($docs $(, $dims)*)),+ }
@@ -119,20 +118,4 @@ mod tests {
     use typenum::{P1, Z0};
 
     use crate::Unit;
-
-    alias_types! {
-        pub TestScalar => ("test all underscores"),
-        pub TestMeter => ("test with mixed _ and P1 in meter position", _, P1),
-    }
-
-    #[test]
-    fn test_underscore_expands_to_z0() {
-        // All _ → all Z0 defaults (Unit<f64> = Unit<f64, Z0, Z0, Z0, Z0, Z0, Z0, Z0>)
-        assert_eq!(TypeId::of::<TestScalar<f64>>(), TypeId::of::<Unit<f64>>());
-        // _ in mass position → Z0, P1 in length position → P1
-        assert_eq!(
-            TypeId::of::<TestMeter<f64>>(),
-            TypeId::of::<Unit<f64, Z0, P1>>()
-        );
-    }
 }
