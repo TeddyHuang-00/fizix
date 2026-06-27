@@ -1,54 +1,54 @@
 use typenum::{N1, N2, N3, N4, P1, P2, P3, P4, Z0};
 
-use crate::{alias_types, alias_units};
+use crate::alias_units;
 
 // Help improve code readability, doesn't affect actual diagnosis
 type __ = Z0;
 
 // base units
 alias_units! {
-    // Name      => (Doc string,                      kg,  m, s,  A,  K, mol, cd)
-    pub Scalar   => ("Dimensionless quantity",        __, __, __, __, __, __, __),
-    pub Kilogram => ("Mass (kg)",                     P1, __, __, __, __, __, __),
-    pub Meter    => ("Length (m)",                    __, P1, __, __, __, __, __),
-    pub Second   => ("Time (s)",                      __, __, P1, __, __, __, __),
-    pub Ampere   => ("Electric Current (A)",          __, __, __, P1, __, __, __),
-    pub Kelvin   => ("Thermodynamic temperature (K)", __, __, __, __, P1, __, __),
-    pub Mole     => ("Amount of substance (mol)",     __, __, __, __, __, P1, __),
-    pub Candela  => ("Luminous intensity (cd)",       __, __, __, __, __, __, P1),
+    // Name      => const (Doc string,                      kg,  m, s,  A,  K, mol, cd)
+    pub Scalar   => const ("Dimensionless quantity",        __, __, __, __, __, __, __),
+    pub Kilogram => const ("Mass (kg)",                     P1, __, __, __, __, __, __),
+    pub Meter    => const ("Length (m)",                    __, P1, __, __, __, __, __),
+    pub Second   => const ("Time (s)",                      __, __, P1, __, __, __, __),
+    pub Ampere   => const ("Electric Current (A)",          __, __, __, P1, __, __, __),
+    pub Kelvin   => const ("Thermodynamic temperature (K)", __, __, __, __, P1, __, __),
+    pub Mole     => const ("Amount of substance (mol)",     __, __, __, __, __, P1, __),
+    pub Candela  => const ("Luminous intensity (cd)",       __, __, __, __, __, __, P1),
 }
 
 // derived units with names
 // <https://en.wikipedia.org/wiki/SI_derived_unit>
 alias_units! {
-    // Name       => (Doc string,                              kg,  m, s,  A,  K, mol, cd)
-    pub Radian    => ("Plane angle (rad, 1)",                  __, __, __, __, __, __, __),
-    pub Steradian => ("Solid angle (sr, 1)",                   __, __, __, __, __, __, __),
-    pub Hertz     => ("Frequency (Hz, s⁻¹)",                   __, __, N1, __, __, __, __),
-    pub Newton    => ("Force (N, kg⋅m⋅s⁻²)",                   P1, P1, N2, __, __, __, __),
-    pub Pascal    => ("Pressure (Pa, kg⋅m⁻¹⋅s⁻²)",             P1, N1, N2, __, __, __, __),
-    pub Joule     => ("Energy (J, kg⋅m²⋅s⁻²)",                 P1, P2, N2, __, __, __, __),
-    pub Watt      => ("Power (W, kg⋅m²⋅s⁻³)",                  P1, P2, N3, __, __, __, __),
-    pub Coulomb   => ("Electric charge (C, s⋅A)",              __, __, P1, P1, __, __, __),
-    pub Volt      => ("Voltage (V, kg⋅m²⋅s⁻³⋅A⁻¹)",            P1, P2, N3, N1, __, __, __),
-    pub Ohm       => ("Resistance (Ω, kg⋅m²⋅s⁻³⋅A⁻²)",         P1, P2, N3, N2, __, __, __),
-    pub Siemens   => ("Conductance (S, kg⁻¹⋅m⁻²⋅s³⋅A²)",       N1, N2, P3, P2, __, __, __),
-    pub Farad     => ("Capacitance (F, kg⁻¹⋅m⁻²⋅s⁴⋅A²)",       N1, N2, P4, P2, __, __, __),
-    pub Henry     => ("Inductance (H, kg⋅m²⋅s⁻²⋅A⁻²)",         P1, P2, N2, N2, __, __, __),
-    pub Tesla     => ("Magnetic flux density (T, kg⋅s⁻²⋅A⁻¹)", P1, __, N2, N1, __, __, __),
-    pub Weber     => ("Magnetic flux (Wb, kg⋅m²⋅s⁻²⋅A⁻¹)",     P1, P2, N2, N1, __, __, __),
-    pub Lumen     => ("Luminous flux (lm, cd⋅sr)",             __, __, __, __, __, __, P1),
-    pub Lux       => ("Illuminance (lx, cd⋅sr⋅m⁻²)",           __, N2, __, __, __, __, P1),
-    pub Becquerel => ("Radioactivity (Bq, s⁻¹)",               __, __, N1, __, __, __, __),
-    pub Gray      => ("Absorbed dose (Gy, m²⋅s⁻²)",            __, P2, N2, __, __, __, __),
-    pub Sievert   => ("Equivalent dose (Sv, m²⋅s⁻²)",          __, P2, N2, __, __, __, __),
-    pub Katal     => ("Catalytic activity (kat, s⁻¹⋅mol)",     __, __, N1, __, __, P1, __),
+    // Name       => const (Doc string,                              kg,  m, s,  A,  K, mol, cd)
+    pub Radian    => const ("Plane angle (rad, 1)",                  __, __, __, __, __, __, __),
+    pub Steradian => const ("Solid angle (sr, 1)",                   __, __, __, __, __, __, __),
+    pub Hertz     => const ("Frequency (Hz, s⁻¹)",                   __, __, N1, __, __, __, __),
+    pub Newton    => const ("Force (N, kg⋅m⋅s⁻²)",                   P1, P1, N2, __, __, __, __),
+    pub Pascal    => const ("Pressure (Pa, kg⋅m⁻¹⋅s⁻²)",             P1, N1, N2, __, __, __, __),
+    pub Joule     => const ("Energy (J, kg⋅m²⋅s⁻²)",                 P1, P2, N2, __, __, __, __),
+    pub Watt      => const ("Power (W, kg⋅m²⋅s⁻³)",                  P1, P2, N3, __, __, __, __),
+    pub Coulomb   => const ("Electric charge (C, s⋅A)",              __, __, P1, P1, __, __, __),
+    pub Volt      => const ("Voltage (V, kg⋅m²⋅s⁻³⋅A⁻¹)",            P1, P2, N3, N1, __, __, __),
+    pub Ohm       => const ("Resistance (Ω, kg⋅m²⋅s⁻³⋅A⁻²)",         P1, P2, N3, N2, __, __, __),
+    pub Siemens   => const ("Conductance (S, kg⁻¹⋅m⁻²⋅s³⋅A²)",       N1, N2, P3, P2, __, __, __),
+    pub Farad     => const ("Capacitance (F, kg⁻¹⋅m⁻²⋅s⁴⋅A²)",       N1, N2, P4, P2, __, __, __),
+    pub Henry     => const ("Inductance (H, kg⋅m²⋅s⁻²⋅A⁻²)",         P1, P2, N2, N2, __, __, __),
+    pub Tesla     => const ("Magnetic flux density (T, kg⋅s⁻²⋅A⁻¹)", P1, __, N2, N1, __, __, __),
+    pub Weber     => const ("Magnetic flux (Wb, kg⋅m²⋅s⁻²⋅A⁻¹)",     P1, P2, N2, N1, __, __, __),
+    pub Lumen     => const ("Luminous flux (lm, cd⋅sr)",             __, __, __, __, __, __, P1),
+    pub Lux       => const ("Illuminance (lx, cd⋅sr⋅m⁻²)",           __, N2, __, __, __, __, P1),
+    pub Becquerel => const ("Radioactivity (Bq, s⁻¹)",               __, __, N1, __, __, __, __),
+    pub Gray      => const ("Absorbed dose (Gy, m²⋅s⁻²)",            __, P2, N2, __, __, __, __),
+    pub Sievert   => const ("Equivalent dose (Sv, m²⋅s⁻²)",          __, P2, N2, __, __, __, __),
+    pub Katal     => const ("Catalytic activity (kat, s⁻¹⋅mol)",     __, __, N1, __, __, P1, __),
 }
 
 // derived units (types-only)
 // <https://en.wikipedia.org/wiki/International_System_of_Units#Coherent_and_non-coherent_SI_units>
 // <https://en.wikipedia.org/wiki/SI_derived_unit#By_field_of_application>
-alias_types! {
+alias_units! {
     // Name                     => (Doc string,      kg,  m, s,  A,  K, mol, cd)
     pub Speed |
     pub Velocity                => ("(m⋅s⁻¹)",       __, P1, N1, __, __, __, __),
