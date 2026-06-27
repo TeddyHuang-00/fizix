@@ -16,6 +16,7 @@ check: && format
 # Unit tests
 test: check
     cargo test
+    cargo test --no-default-features
 
 # Coverage report
 coverage: check

@@ -1,1 +1,1 @@
-words = ["typenum", "siunit", "trybuild"]
+words = ["typenum", "siunit", "trybuild", "clippy", "udeps"]
