@@ -7,7 +7,8 @@ use typenum::{Integer, Z0};
 
 /// A physical quantity with compile-time dimension checking.
 ///
-/// Seven type parameters (after `V`) corresponding to the SI base dimensions for
+/// Seven type parameters (after `V`) corresponding to the SI base dimensions
+/// for
 /// 1. mass (kilogram),
 /// 2. length (meter),
 /// 3. time (second),

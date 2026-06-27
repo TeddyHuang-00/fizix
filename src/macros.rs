@@ -85,7 +85,7 @@ macro_rules! alias_units {
     ($(|)?$pre:vis $name:ident => ($doc:literal $(, $dim:path)*)$(,)?) => {
         $crate::alias_types! { $pre $name => ($doc $(, $dim)*) }
 
-        paste::paste! {
+        $crate::paste::paste! {
             #[doc = $doc]
             #[inline]
             $pre const fn [<$name:snake>]<V>(v: V) -> $name<V> {

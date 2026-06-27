@@ -27,4 +27,7 @@ mod macros;
 mod units;
 
 pub use dim::Unit;
+// Re-export paste for macro_rules hygiene.
+#[doc(hidden)]
+pub use paste;
 pub use units::*;
