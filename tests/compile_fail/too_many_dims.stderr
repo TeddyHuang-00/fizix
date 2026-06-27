@@ -1,0 +1,40 @@
+error[E0107]: struct takes at most 8 generic arguments but 9 generic arguments were supplied
+ --> tests/compile_fail/too_many_dims.rs:4:1
+  |
+4 | / alias_types! {
+5 | |     pub Foo => ("doc", P1, P1, P1, P1, P1, P1, P1, P1),
+6 | | }
+  | | ^
+  | | |
+  | |_expected at most 8 generic arguments
+  |   help: remove the unnecessary generic argument
+  |
+note: struct defined here, with at most 8 generic parameters: `V`, `M`, `L`, `T`, `I`, `K`, `N`, `J`
+ --> src/dim.rs
+  |
+  | pub struct Unit<
+  |            ^^^^
+  |     V,
+  |     -
+  |     // Mass exponent (kilogram)
+  |     M = Z0,
+  |     ------
+  |     // Length exponent (meter)
+  |     L = Z0,
+  |     ------
+  |     // Time exponent (second)
+  |     T = Z0,
+  |     ------
+  |     // Current exponent (ampere)
+  |     I = Z0,
+  |     ------
+  |     // Temperature exponent (kelvin)
+  |     K = Z0,
+  |     ------
+  |     // Amount exponent (mole)
+  |     N = Z0,
+  |     ------
+  |     // Intensity exponent (candela)
+  |     J = Z0,
+  |     ------
+  = note: this error originates in the macro `alias_types` (in Nightly builds, run with -Z macro-backtrace for more info)

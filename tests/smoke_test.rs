@@ -100,3 +100,15 @@ fn compile_fail_dimension_mismatch() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/compile_fail/dimension_mismatch.rs");
 }
+
+#[test]
+fn compile_fail_too_many_dims() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/too_many_dims.rs");
+}
+
+#[test]
+fn compile_fail_private_alias() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/private_alias.rs");
+}
