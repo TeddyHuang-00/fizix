@@ -360,12 +360,14 @@ mod tests {
                     [<$macro:camel InScope>] => ("doc", P1),
                     [<$macro:camel ByPath>] => ("doc", typenum::P1),
                     [<$macro:camel ByAlias>] => ("doc", MyP1),
+                    [<$macro:camel ByDeepPath>] => ("doc", typenum::consts::P1),
                 }
 
                 assert_all_eq!(
                     TypeId::of::<[<$macro:camel InScope>]<f64>>(),
                     TypeId::of::<[<$macro:camel ByPath>]<f64>>(),
                     TypeId::of::<[<$macro:camel ByAlias>]<f64>>(),
+                    TypeId::of::<[<$macro:camel ByDeepPath>]<f64>>(),
                     TypeId::of::<Unit<f64, P1>>()
                 )
             }
@@ -379,9 +381,11 @@ mod tests {
                     [<$macro:upper _IN_SCOPE>],
                     [<$macro:upper _BY_PATH>],
                     [<$macro:upper _BY_ALIAS>],
+                    [<$macro:upper _BY_DEEP_PATH>],
                     [<$macro _in_scope>](1.0f64),
                     [<$macro _by_path>](1.0f64),
                     [<$macro _by_alias>](1.0f64),
+                    [<$macro _by_deep_path>](1.0f64),
                 );
             }
         };
