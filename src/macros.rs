@@ -3,7 +3,7 @@
 /// For each entry, this generates:
 /// - `Name<V>` — type alias
 ///
-/// If the definition is preceded by `const`, it also generates:
+/// If the entry uses `const` (after `=>`), it also generates:
 /// - `name<V>(v: V) -> Name<V>` — const helper function
 /// - `NAME: Name<f64>` — const value of `1.0`
 ///

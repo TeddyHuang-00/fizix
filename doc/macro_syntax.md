@@ -10,7 +10,7 @@ where:
 
 - `vis` is the optional visibility like `pub`, `pub(crate)`. Defaults to private when omitted.
 - `Alias` is the PascalCase type alias to create, can be multiple aliases separated by pipe `|`.
-- `const` is the optional marker for populating const function and const value.
+- `const` is the optional marker for generating const helper function and const value.
   Defaults to only creating type aliases when omitted.
 - `"doc"` is the doc string to be attached to every generated item.
 - `dim`s are the exponent numbers for each of the 7 SI base dimensions.
@@ -23,6 +23,47 @@ where:
   - **temperature** (K)
   - **amount** (mol)
   - **intensity** (cd).
+
+## Generated items
+
+For a single entry without `const`:
+
+```ignore
+alias_units! {
+    pub Force => ("Force (N)", P1, P1, N2),
+}
+// generates:
+pub type Force<V> = Unit<V, P1, P1, N2>;
+```
+
+With `const`, it additionally generates:
+
+```ignore
+alias_units! {
+    pub Newton => const ("Force (N)", P1, P1, N2),
+}
+// generates:
+pub type Newton<V> = Unit<V, P1, P1, N2>;
+pub const fn newton<V>(v: V) -> Newton<V>;
+pub const NEWTON: Newton<f64> = Newton::new(1.0);
+```
+
+The snake_case function (`newton`) and UPPER_SNAKE_CASE constant (`NEWTON`) are
+derived from the PascalCase alias name (`Newton`). The constant always has value
+`1.0` and type `Alias<f64>`.
+
+## Pipe aliases (shared definition)
+
+Multiple aliases with the same dimension can share one definition via `|`:
+
+```ignore
+alias_units! {
+    pub Velocity | Speed => ("(m/s)", Z0, P1, N1),
+}
+// generates type aliases for both Velocity and Speed.
+// If tagged `const`, both get their own helper function and constant.
+// The visibility marker are still per-item and not shared.
+```
 
 ## Formatting conveniences
 
@@ -45,7 +86,7 @@ typenum::consts::P1  // deep path
 Separate entries with commas. Each entry independently controls its own `const`:
 
 ```ignore
-alias! {
+alias_units! {
     NameA => ("doc", P1),
     NameB => const ("doc", N1),
 }
