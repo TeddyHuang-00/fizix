@@ -34,7 +34,7 @@ fn speed_calculation() {
 #[test]
 fn derived_unit_arithmetic() {
     // METER / SECOND / SECOND produces the Acceleration type (m⋅s⁻²)
-    let acc: Acceleration<f64> = METER / SECOND / SECOND;
+    let acc: Acceleration<_> = METER / SECOND / SECOND;
     assert_eq!(acc.value, 1.0);
 
     // KILOGRAM * METER / SECOND / SECOND == NEWTON  (kg⋅m⋅s⁻²)
@@ -50,7 +50,7 @@ fn derived_unit_arithmetic() {
 /// UPPERCASE constant (with value 1.0).
 #[test]
 fn helper_functions_and_constants() {
-    // -- helper functions ---------------------------------------------------
+    // helper functions
     let d = meter(100.0);
     let t = second(10.0);
     assert_eq!(d.value, 100.0);
@@ -59,7 +59,7 @@ fn helper_functions_and_constants() {
     let m = kilogram(5.0);
     assert_eq!(m.value, 5.0);
 
-    // -- constants ----------------------------------------------------------
+    // constants
     assert_eq!(METER.value, 1.0);
     assert_eq!(SECOND.value, 1.0);
     assert_eq!(KILOGRAM.value, 1.0);
@@ -75,10 +75,10 @@ fn helper_functions_and_constants() {
 /// 1 N * 1 m = 1 J
 #[test]
 fn work_energy_relation() {
-    let force: Newton<f64> = NEWTON;
-    let distance: Meter<f64> = METER;
+    let force: Newton<_> = NEWTON;
+    let distance: Meter<_> = METER;
 
-    let work: Joule<f64> = force * distance;
+    let work: Joule<_> = force * distance;
     assert_eq!(work.value, 1.0);
 }
 
