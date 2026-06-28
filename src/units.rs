@@ -172,16 +172,54 @@ mod tests {
     use super::*;
     use crate::Unit;
 
-    /// Helper macro to turn type-only aliases into concrete values
+    /// Helper macro to turn type-only aliases into concrete values.
+    ///
+    /// Accepts expressions with `*` and `/` operators and `^ N` powers.
+    /// Each ident is expanded to `ident::new(1.0f64)`.
+    /// Operators are preserved as-is (left-associative, no parenthesis).
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// eval!(Speed)              → Speed::new(1.0f64)
+    /// eval!(Meter / Second)     → Meter::new(1.0f64) / Second::new(1.0f64)
+    /// eval!(Meter / Second ^ 2) → Meter::new(1.0f64) / (Second::new(1.0f64) * Second::new(1.0f64))
+    /// ```
     macro_rules! eval {
-        ($id:ident) => {
-            $id::new(1.0f64)
+        // term expansion
+        (@term $id:ident $(^ 1)?) => { $id::new(1.0f64) };
+        (@term $id:ident ^ 2) => { $id::new(1.0f64) * eval!(@term $id) };
+        (@term $id:ident ^ 3) => { $id::new(1.0f64) * eval!(@term $id ^ 2) };
+        (@term $id:ident ^ 4) => { $id::new(1.0f64) * eval!(@term $id ^ 3) };
+
+        // entry: single term, no operators
+        ($id:ident) => { eval!(@term $id) };
+        ($id:ident ^ $fe:tt) => { eval!(@term $id ^ $fe) };
+
+        // entry: first term + ^ N + rest
+        ($id:ident ^ $fe:tt $($rest:tt)+) => {
+            eval!(@munch (eval!(@term $id ^ $fe)) $($rest)+)
         };
-        ($left:ident * $right:tt) => {
-            eval!($left) * eval!($right)
+        // entry: first term + rest (no power)
+        ($id:ident $($rest:tt)+) => {
+            eval!(@munch (eval!(@term $id)) $($rest)+)
         };
-        ($left:tt / $right:ident) => {
-            eval!($left) / eval!($right)
+
+        // muncher: op + ident + power + rest
+        (@munch ($($acc:tt)*) $op:tt $next:ident ^ $e:tt $($rest:tt)+) => {
+            eval!(@munch (($($acc)*) $op (eval!(@term $next ^ $e))) $($rest)+)
+        };
+        // muncher: op + ident + power, end
+        (@munch ($($acc:tt)*) $op:tt $next:ident ^ $e:tt) => {
+            ($($acc)*) $op (eval!(@term $next ^ $e))
+        };
+        // muncher: op + ident + rest (no power)
+        (@munch ($($acc:tt)*) $op:tt $next:ident $($rest:tt)+) => {
+            eval!(@munch (($($acc)*) $op (eval!(@term $next))) $($rest)+)
+        };
+        // muncher: op + ident, end (no power)
+        (@munch ($($acc:tt)*) $op:tt $next:ident) => {
+            ($($acc)*) $op (eval!(@term $next))
         };
     }
 
@@ -227,7 +265,109 @@ mod tests {
     }
 
     #[test]
-    fn test_derived_type() {
+    fn test_derived_kinematics_type() {
         assert_eq!(eval!(Speed), eval!(Meter / Second));
+        assert_eq!(eval!(Acceleration), eval!(Meter / Second ^ 2));
+        assert_eq!(eval!(Jerk), eval!(Meter / Second ^ 3));
+        assert_eq!(eval!(Snap), eval!(Meter / Second ^ 4));
+        assert_eq!(eval!(Yank), eval!(Kilogram * Meter / Second ^ 3));
+        assert_eq!(eval!(AngularVelocity), eval!(Radian / Second));
+        assert_eq!(eval!(AngularAcceleration), eval!(Radian / Second ^ 2));
+        assert_eq!(eval!(FrequencyDrift), eval!(Hertz / Second));
+        assert_eq!(eval!(VolumetricFlow), eval!(Meter ^ 3 / Second));
+    }
+
+    #[test]
+    fn test_derived_mechanics_type() {
+        assert_eq!(eval!(Area), eval!(Meter ^ 2));
+        assert_eq!(eval!(Volume), eval!(Meter ^ 3));
+        assert_eq!(eval!(Momentum), eval!(Newton * Second));
+        assert_eq!(eval!(AngularMomentum), eval!(Newton * Meter * Second));
+        assert_eq!(eval!(Torque), eval!(Joule / Radian));
+        assert_eq!(eval!(MomentOfForce), eval!(Newton * Meter));
+        assert_eq!(eval!(WaveNumber), eval!(Scalar / Meter));
+        assert_eq!(eval!(AreaDensity), eval!(Kilogram / Meter ^ 2));
+        assert_eq!(eval!(Density), eval!(Kilogram / Meter ^ 3));
+        assert_eq!(eval!(SpecificVolume), eval!(Meter ^ 3 / Kilogram));
+        assert_eq!(eval!(Action), eval!(Joule * Second));
+        assert_eq!(eval!(SpecificEnergy), eval!(Joule / Kilogram));
+        assert_eq!(eval!(SurfaceTension), eval!(Joule / Meter ^ 2));
+        assert_eq!(eval!(Stiffness), eval!(Newton / Meter));
+        assert_eq!(eval!(HeatFluxDensity), eval!(Watt / Meter ^ 2));
+        assert_eq!(eval!(KinematicViscosity), eval!(Meter ^ 2 / Second));
+        assert_eq!(eval!(DynamicViscosity), eval!(Pascal * Second));
+        assert_eq!(eval!(LinearMassDensity), eval!(Kilogram / Meter));
+        assert_eq!(eval!(MassFlowRate), eval!(Kilogram / Second));
+        assert_eq!(eval!(Radiance), eval!(Watt / Steradian / Meter ^ 2));
+        assert_eq!(eval!(SpectralPower), eval!(Watt / Meter));
+        assert_eq!(eval!(AbsorbedDoseRate), eval!(Gray / Second));
+        assert_eq!(eval!(FuelEfficiency), eval!(Meter / Meter ^ 3));
+        assert_eq!(eval!(SpectralIrradiance), eval!(Watt / Meter ^ 3));
+        assert_eq!(eval!(EnergyFluxDensity), eval!(Joule / Meter ^ 2 / Second));
+        assert_eq!(eval!(Compressibility), eval!(Scalar / Pascal));
+        assert_eq!(eval!(RadiantExposure), eval!(Joule / Meter ^ 2));
+        assert_eq!(eval!(MomentOfInertia), eval!(Kilogram * Meter ^ 2));
+        assert_eq!(
+            eval!(SpecificAngularMomentum),
+            eval!(Newton * Meter * Second / Kilogram)
+        );
+        assert_eq!(eval!(RadiantIntensity), eval!(Watt / Steradian));
+        assert_eq!(eval!(SpectralIntensity), eval!(Watt / Steradian / Meter));
+    }
+
+    #[test]
+    fn test_derived_chemistry_type() {
+        assert_eq!(eval!(Molarity), eval!(Mole / Meter ^ 3));
+        assert_eq!(eval!(MolarVolume), eval!(Meter ^ 3 / Mole));
+        assert_eq!(eval!(MolarHeatCapacity), eval!(Joule / Kelvin / Mole));
+        assert_eq!(eval!(MolarEnergy), eval!(Joule / Mole));
+        assert_eq!(eval!(MolarConductivity), eval!(Siemens * Meter ^ 2 / Mole));
+        assert_eq!(eval!(Molality), eval!(Mole / Kilogram));
+        assert_eq!(eval!(MolarMass), eval!(Kilogram / Mole));
+        assert_eq!(eval!(CatalyticEfficiency), eval!(Meter ^ 3 / Mole / Second));
+    }
+
+    #[test]
+    fn test_derived_electromagnetics_type() {
+        assert_eq!(eval!(LinearChargeDensity), eval!(Coulomb / Meter));
+        assert_eq!(eval!(SurfaceChargeDensity), eval!(Coulomb / Meter ^ 2));
+        assert_eq!(eval!(VolumeChargeDensity), eval!(Coulomb / Meter ^ 3));
+        assert_eq!(eval!(Magnetization), eval!(Ampere / Meter));
+        assert_eq!(eval!(CurrentDensity), eval!(Ampere / Meter ^ 2));
+        assert_eq!(eval!(ElectricField), eval!(Volt / Meter));
+        assert_eq!(eval!(ElectricalConductivity), eval!(Siemens / Meter));
+        assert_eq!(eval!(Permittivity), eval!(Farad / Meter));
+        assert_eq!(eval!(Permeability), eval!(Henry / Meter));
+        assert_eq!(eval!(MagneticVectorPotential), eval!(Weber / Meter));
+        assert_eq!(eval!(ElectricDipoleMoment), eval!(Coulomb * Meter));
+        assert_eq!(eval!(MagneticMoment), eval!(Ampere * Meter ^ 2));
+        assert_eq!(eval!(ElectricFlux), eval!(Volt * Meter));
+        assert_eq!(eval!(ElectricalResistivity), eval!(Ohm * Meter));
+        assert_eq!(eval!(MagneticRigidity), eval!(Tesla * Meter));
+        assert_eq!(eval!(MagneticReluctance), eval!(Scalar / Henry));
+        assert_eq!(eval!(ComplexPower), eval!(Volt * Ampere));
+        assert_eq!(eval!(ElectronMobility), eval!(Meter ^ 2 / Volt / Second));
+        assert_eq!(eval!(Exposure), eval!(Coulomb / Kilogram));
+    }
+
+    #[test]
+    fn test_derived_photometry_type() {
+        assert_eq!(eval!(LuminousEnergy), eval!(Lumen * Second));
+        assert_eq!(eval!(LuminousExposure), eval!(Lux * Second));
+        assert_eq!(eval!(Luminance), eval!(Candela / Meter ^ 2));
+        assert_eq!(eval!(LuminousEfficacy), eval!(Lumen / Watt));
+    }
+
+    #[test]
+    fn test_derived_thermodynamics_type() {
+        assert_eq!(eval!(Entropy), eval!(Joule / Kelvin));
+        assert_eq!(
+            eval!(SpecificHeatCapacity),
+            eval!(Joule / Kelvin / Kilogram)
+        );
+        assert_eq!(eval!(ThermalConductivity), eval!(Watt / Meter / Kelvin));
+        assert_eq!(eval!(ThermalResistance), eval!(Kelvin / Watt));
+        assert_eq!(eval!(ThermalExpansionCoefficient), eval!(Scalar / Kelvin));
+        assert_eq!(eval!(TemperatureGradient), eval!(Kelvin / Meter));
     }
 }
