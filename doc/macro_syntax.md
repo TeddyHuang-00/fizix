@@ -9,7 +9,7 @@ For each entry, it must follow the following syntax:
 where:
 
 - `vis` is the optional visibility like `pub`, `pub(crate)`. Defaults to private when omitted.
-- `Alias` is the PascalCase type alias to create, can be multiple aliases separated by pipe `|`.
+- `Alias` is the `PascalCase` type alias to create, can be multiple aliases separated by pipe `|`.
 - `const` is the optional marker for generating const helper function and const value.
   Defaults to only creating type aliases when omitted.
 - `"doc"` is the doc string to be attached to every generated item.
@@ -48,8 +48,8 @@ pub const fn newton<V>(v: V) -> Newton<V>;
 pub const NEWTON: Newton<f64> = Newton::new(1.0);
 ```
 
-The snake_case function (`newton`) and UPPER_SNAKE_CASE constant (`NEWTON`) are
-derived from the PascalCase alias name (`Newton`). The constant always has value
+The `snake_case` function (`newton`) and `UPPER_SNAKE_CASE` constant (`NEWTON`) are
+derived from the `PascalCase` alias name (`Newton`). The constant always has value
 `1.0` and type `Alias<f64>`.
 
 ## Pipe aliases (shared definition)
