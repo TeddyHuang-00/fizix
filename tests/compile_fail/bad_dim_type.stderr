@@ -1,0 +1,13 @@
+error[E0599]: the associated function or constant `new` exists for struct `Unit<_, String>`, but its trait bounds were not satisfied
+ --> tests/compile_fail/bad_dim_type.rs:8:18
+  |
+8 |     let _ = Foo::new(1.0f64);
+  |                  ^^^ associated function or constant cannot be called on `Unit<_, String>` due to unsatisfied trait bounds
+  |
+ ::: $RUST/alloc/src/string.rs
+  |
+  | pub struct String {
+  | ----------------- doesn't satisfy `String: typenum::marker_traits::Integer`
+  |
+  = note: the following trait bounds were not satisfied:
+          `String: typenum::marker_traits::Integer`

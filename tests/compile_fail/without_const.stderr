@@ -1,0 +1,5 @@
+error[E0425]: cannot find value `FOO` in this scope
+ --> tests/compile_fail/without_const.rs:8:13
+  |
+8 |     let _ = FOO; // <- cannot find value
+  |             ^^^ not found in this scope

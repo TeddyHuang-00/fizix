@@ -112,3 +112,27 @@ fn compile_fail_private_alias() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/compile_fail/private_alias.rs");
 }
+
+#[test]
+fn compile_fail_without_const() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/without_const.rs");
+}
+
+#[test]
+fn compile_fail_duplicate_name() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/duplicate_name.rs");
+}
+
+#[test]
+fn compile_fail_bad_dim_type() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/bad_dim_type.rs");
+}
+
+#[test]
+fn compile_fail_const_wrong_position() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile_fail/const_wrong_position.rs");
+}

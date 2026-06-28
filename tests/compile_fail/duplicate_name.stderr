@@ -1,0 +1,10 @@
+error[E0428]: the name `Foo` is defined multiple times
+ --> tests/compile_fail/duplicate_name.rs:4:1
+  |
+3 | alias_units! { pub Foo => ("first definition") }
+  | ------------------------------------------------ previous definition of the type `Foo` here
+4 | alias_units! { pub Foo => ("duplicate definition") }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Foo` redefined here
+  |
+  = note: `Foo` must be defined only once in the type namespace of this module
+  = note: this error originates in the macro `alias_units` (in Nightly builds, run with -Z macro-backtrace for more info)
