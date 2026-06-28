@@ -7,8 +7,8 @@ error[E0603]: type alias `NotPub` is private
 note: the type alias `NotPub` is defined here
  --> tests/compile_fail/private_alias.rs:4:5
   |
-4 | /     alias_types! {
+4 | /     alias_units! {
 5 | |         NotPub => ("private alias"),
 6 | |     }
   | |_____^
-  = note: this error originates in the macro `alias_types` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `alias_units` (in Nightly builds, run with -Z macro-backtrace for more info)

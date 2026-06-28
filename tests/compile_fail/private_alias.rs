@@ -1,7 +1,7 @@
 mod inner {
-    use siunit::alias_types;
+    use siunit::alias_units;
 
-    alias_types! {
+    alias_units! {
         NotPub => ("private alias"),
     }
 }
