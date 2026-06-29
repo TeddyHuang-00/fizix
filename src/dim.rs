@@ -1,9 +1,12 @@
 use core::{
+    fmt::{self, Display, Formatter, Write},
     marker::PhantomData,
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
 use typenum::{Integer, Z0};
+
+const EMPTY: char = '\0';
 
 /// A physical quantity with compile-time dimension checking.
 ///
@@ -68,6 +71,147 @@ where
             value,
             _phantom: PhantomData,
         }
+    }
+
+    /// Format the unit name using ASCII symbols
+    ///
+    /// # Errors
+    ///
+    /// This function should return [`Err`] if, and only if, the provided
+    /// [`Formatter`] returns [`Err`]. String formatting is considered an
+    /// infallible operation; this function only returns a [`Result`]
+    /// because writing to the underlying stream might fail and it must provide
+    /// a way to propagate the fact that an error has occurred back up the
+    /// stack.
+    pub fn ascii_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        self.fmt_unit(
+            f,
+            '*',
+            '^',
+            '-',
+            &['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+        )?;
+        Ok(())
+    }
+
+    /// Format the unit name using pretty unicode symbols
+    ///
+    /// # Errors
+    ///
+    /// This function should return [`Err`] if, and only if, the provided
+    /// [`Formatter`] returns [`Err`]. String formatting is considered an
+    /// infallible operation; this function only returns a [`Result`]
+    /// because writing to the underlying stream might fail and it must provide
+    /// a way to propagate the fact that an error has occurred back up the
+    /// stack.
+    pub fn pretty_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        self.fmt_unit(
+            f,
+            '⋅',
+            EMPTY,
+            '⁻',
+            &['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'],
+        )?;
+        Ok(())
+    }
+
+    /// Format the unit name using specific char set
+    fn fmt_unit(
+        &self,
+        f: &mut Formatter<'_>,
+        dot: char,
+        exp: char,
+        minus: char,
+        digits: &[char; 10],
+    ) -> Result<(), fmt::Error> {
+        let items = [
+            ("kg", M::to_i8()),
+            ("m", L::to_i8()),
+            ("s", T::to_i8()),
+            ("A", I::to_i8()),
+            ("K", K::to_i8()),
+            ("mol", N::to_i8()),
+            ("cd", J::to_i8()),
+        ];
+        let positive = items.iter().filter(|&&(_, exponent)| exponent > 0);
+        let negative = items.iter().filter(|&&(_, exponent)| exponent < 0);
+        let unit_name = positive.chain(negative).map(|&(id, exponent)| {
+            let mut e = [EMPTY; 5];
+            // Insert exp operator between unit name and exponent
+            e[0] = exp;
+
+            let mut idx = 4;
+            let (mut exponent, sign) = match exponent {
+                1 => (0, EMPTY),
+                2.. => (exponent.unsigned_abs(), EMPTY),
+                ..=-1 => (exponent.unsigned_abs(), minus),
+                0 => unreachable!("exp cannot be 0"),
+            };
+            // Insert the minus sign if exponent is negative
+            e[1] = sign;
+
+            // Sets each and every digit in backward order
+            while exponent > 0 {
+                e[idx] = digits[(exponent % 10) as usize];
+                exponent /= 10;
+                idx -= 1;
+                if idx <= 1 {
+                    unreachable!("i8 should be no more than 3 digits in decimal")
+                }
+            }
+            id.chars().chain(e.into_iter().filter(|&ch| ch != EMPTY))
+        });
+
+        // Since we need to support no_std, no str can directly constructed,
+        // so we just print each char one by one in order
+        for (i, u) in unit_name.enumerate() {
+            // If the unit has more than one part,
+            // we need a dot operator to concat them
+            if i > 0 {
+                f.write_char(dot)?;
+            }
+            for s in u {
+                f.write_char(s)?;
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<V, M, L, T, I, K, N, J> Display for Unit<V, M, L, T, I, K, N, J>
+where
+    V: Display,
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
+        self.value.fmt(f)?;
+        if [
+            M::to_i8(),
+            L::to_i8(),
+            T::to_i8(),
+            I::to_i8(),
+            K::to_i8(),
+            N::to_i8(),
+            J::to_i8(),
+        ]
+        .into_iter()
+        .any(|exp| exp != 0)
+        {
+            // If the not a scalar type, the unit is not empty,
+            // so we should place a space between the value and it
+            f.write_char(' ')?;
+            #[cfg(feature = "pretty-display")]
+            self.pretty_unit(f)?;
+            #[cfg(not(feature = "pretty-display"))]
+            self.ascii_unit(f)?;
+        }
+        Ok(())
     }
 }
 
