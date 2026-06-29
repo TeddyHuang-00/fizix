@@ -17,8 +17,7 @@ nightly = false
 crate-type = ["lib"]
 
 [features]
-default = ["std"]
-std = []
+default = []
 
 [dependencies]
 paste = "1.0"
