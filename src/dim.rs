@@ -683,4 +683,82 @@ mod tests {
         let big_pos: Unit<f64, Z0, P10> = Unit::new(1.0);
         assert_display!(big_pos, "1 m¹⁰", "1 m^10");
     }
+
+    // Vector algebra tests
+
+    #[derive(Clone, Copy, Debug, Default, PartialEq)]
+    struct Vec3(f64, f64, f64);
+
+    impl CrossProduct for Vec3 {
+        type Output = Self;
+        fn cross(self, rhs: Self) -> Self {
+            Vec3(
+                self.1 * rhs.2 - self.2 * rhs.1,
+                self.2 * rhs.0 - self.0 * rhs.2,
+                self.0 * rhs.1 - self.1 * rhs.0,
+            )
+        }
+    }
+    impl DotProduct for Vec3 {
+        type Output = f64;
+        fn dot(self, rhs: Self) -> f64 {
+            self.0 * rhs.0 + self.1 * rhs.1 + self.2 * rhs.2
+        }
+    }
+    impl VectorNorm for Vec3 {
+        type Output = f64;
+        fn norm(self) -> f64 {
+            (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
+        }
+    }
+
+    type Vec3Scalar = Unit<Vec3, Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
+    type Vec3Unit = Unit<Vec3, P1, P2, P3, P4, P5, P6, P7>;
+    type Vec3UnitSquared = Unit<Vec3, P2, P4, P6, P8, P10, P12, P14>;
+
+    #[test]
+    fn unit_vec3_cross() {
+        let x: Vec3Scalar = Unit::new(Vec3(1.0, 0.0, 0.0));
+        let y: Vec3Scalar = Unit::new(Vec3(0.0, 1.0, 0.0));
+        let z: Vec3Scalar = x.cross(y);
+        assert!((z.value.2 - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn unit_vec3_cross_with_dim() {
+        let x: Vec3Unit = Unit::new(Vec3(1.0, 0.0, 0.0));
+        let y: Vec3Unit = Unit::new(Vec3(0.0, 1.0, 0.0));
+        let z: Vec3UnitSquared = x.cross(y);
+        assert!((z.value.2 - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn unit_vec3_dot() {
+        let a: Vec3Scalar = Unit::new(Vec3(3.0, 4.0, 0.0));
+        let b: Vec3Scalar = Unit::new(Vec3(4.0, 3.0, 0.0));
+        let d: FloatScalar = a.dot(b);
+        assert!((d.value - 24.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn unit_vec3_dot_with_dim() {
+        let a: Vec3Unit = Unit::new(Vec3(3.0, 4.0, 0.0));
+        let b: Vec3Unit = Unit::new(Vec3(4.0, 3.0, 0.0));
+        let d: FloatUnitSquared = a.dot(b);
+        assert!((d.value - 24.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn unit_vec3_norm() {
+        let a: Vec3Scalar = Unit::new(Vec3(3.0, 4.0, 0.0));
+        let n: FloatScalar = a.norm();
+        assert!((n.value - 5.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn unit_vec3_norm_with_dim() {
+        let a: Vec3Unit = Unit::new(Vec3(3.0, 4.0, 0.0));
+        let n: FloatUnit = a.norm();
+        assert!((n.value - 5.0).abs() < 1e-10);
+    }
 }
