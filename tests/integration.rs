@@ -91,6 +91,72 @@ fn integer_arithmetic() {
     assert_eq!(speed.value, 100i32);
 }
 
+/// Display output for scalar (dimensionless) values
+#[test]
+fn display_scalar() {
+    let s: Unit<f64> = Scalar::new(3.14);
+    let out = format!("{}", s);
+    assert_eq!(out, "3.14");
+}
+
+/// Display output for single base unit
+#[test]
+fn display_base_units() {
+    let kg = Kilogram::new(5.0);
+    let m = Meter::new(10.0);
+    let s = Second::new(60.0);
+
+    assert_eq!(format!("{}", kg), "5 kg");
+    assert_eq!(format!("{}", m), "10 m");
+    assert_eq!(format!("{}", s), "60 s");
+}
+
+/// Display output for derived units with names
+#[test]
+fn display_derived_units() {
+    let force = Newton::new(100.0);
+    let pressure = Pascal::new(101325.0);
+    let energy = Joule::new(42.0);
+    let power = Watt::new(1000.0);
+    let freq = Hertz::new(440.0);
+    let charge = Coulomb::new(1.0);
+    let voltage = Volt::new(230.0);
+    let resistance = Ohm::new(100.0);
+
+    assert_eq!(format!("{}", force), "100 kg⋅m⋅s⁻²");
+    assert_eq!(format!("{}", pressure), "101325 kg⋅m⁻¹⋅s⁻²");
+    assert_eq!(format!("{}", energy), "42 kg⋅m²⋅s⁻²");
+    assert_eq!(format!("{}", power), "1000 kg⋅m²⋅s⁻³");
+    assert_eq!(format!("{}", freq), "440 s⁻¹");
+    assert_eq!(format!("{}", charge), "1 s⋅A");
+    assert_eq!(format!("{}", voltage), "230 kg⋅m²⋅s⁻³⋅A⁻¹");
+    assert_eq!(format!("{}", resistance), "100 kg⋅m²⋅s⁻³⋅A⁻²");
+}
+
+/// Display output from chained arithmetic operations
+#[test]
+fn display_chained_arithmetic() {
+    let distance = Meter::new(1000.0);
+    let time = Second::new(10.0);
+    let speed = distance / time;
+
+    // Speed is Velocity<f64> = m⋅s⁻¹
+    assert_eq!(format!("{}", speed), "100 m⋅s⁻¹");
+
+    // Work: force * distance = 1 N * 1 m = 1 J
+    let work = NEWTON * METER;
+    assert_eq!(format!("{}", work), "1 kg⋅m²⋅s⁻²");
+}
+
+/// Display with integer value types in integration context
+#[test]
+fn display_integer_types() {
+    let d = Meter::new(1000i32);
+    let t = Second::new(10i32);
+    let speed = d / t;
+    assert_eq!(format!("{}", speed), "100 m⋅s⁻¹");
+}
+
 /// Verify that adding meters and seconds is rejected at compile time.
 ///
 /// Uses `trybuild` to compile a separate test file that attempts the

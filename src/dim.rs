@@ -305,7 +305,10 @@ where
 
 #[cfg(test)]
 mod tests {
-    use typenum::{N6, P1, P2, P3, P4, P5, P6, P7, P8, P10, P12, P14};
+    extern crate alloc;
+    use alloc::format;
+
+    use typenum::{N1, N2, N3, N6, N12, P1, P2, P3, P4, P5, P6, P7, P8, P10, P12, P14};
 
     use super::*;
 
@@ -505,5 +508,109 @@ mod tests {
         let x = x * kg / meter / sec;
 
         let _: Unit<f64, P6, Z0, N6> = x;
+    }
+
+    #[test]
+    fn test_scalar_display() {
+        let s: Unit<f64> = Unit::new(42.0);
+        let out = format!("{}", s);
+        assert_eq!(out, "42");
+    }
+
+    #[test]
+    fn test_display_single_positive_dim() {
+        // length (m) — exponent 1, no exponent marker
+        let m: Unit<f64, Z0, P1> = Unit::new(5.0);
+        let out = format!("{}", m);
+        assert_eq!(out, "5 m");
+    }
+
+    #[test]
+    fn test_display_single_negative_dim() {
+        // frequency (s⁻¹ = Hz) — negative exponent -1
+        let hz: Unit<f64, Z0, Z0, N1> = Unit::new(440.0);
+        let out = format!("{}", hz);
+        assert_eq!(out, "440 s⁻¹");
+    }
+
+    #[test]
+    fn test_display_single_higher_positive_dim() {
+        // Area (m²) — exponent 2
+        let area: Unit<f64, Z0, P2> = Unit::new(25.0);
+        let out = format!("{}", area);
+        assert_eq!(out, "25 m²");
+    }
+
+    #[test]
+    fn test_display_multi_dim_pos_neg() {
+        // Velocity (m⋅s⁻¹) = length^1, time^-1
+        let v: Unit<f64, Z0, P1, N1> = Unit::new(10.0);
+        let out = format!("{}", v);
+        assert_eq!(out, "10 m⋅s⁻¹");
+    }
+
+    #[test]
+    fn test_display_three_dim_pos_neg() {
+        // Newton-like: kg⋅m⋅s⁻²  (P1, P1, N2)
+        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
+        let out = format!("{}", n);
+        assert_eq!(out, "100 kg⋅m⋅s⁻²");
+    }
+
+    #[test]
+    fn test_display_neg_first_then_pos() {
+        // Siemens-like (conductance): kg⁻¹⋅m⁻²⋅s³⋅A²
+        // dim: N1, N2, P3, P2
+        let s: Unit<f64, N1, N2, P3, P2> = Unit::new(2.0);
+        let out = format!("{}", s);
+        assert_eq!(out, "2 s³⋅A²⋅kg⁻¹⋅m⁻²");
+    }
+
+    #[test]
+    fn test_display_all_negative() {
+        // All negative exponents
+        let all_neg: Unit<f64, N1, N2, N3, N1, N1, N1, N1> = Unit::new(1.0);
+        let out = format!("{}", all_neg);
+        assert_eq!(out, "1 kg⁻¹⋅m⁻²⋅s⁻³⋅A⁻¹⋅K⁻¹⋅mol⁻¹⋅cd⁻¹");
+    }
+
+    #[test]
+    fn test_ascii_unit_method() {
+        // Test display formatting (via Display impl)
+        // With pretty-display feature default, this renders as pretty
+        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
+        let out = format!("{}", n);
+        assert_eq!(out, "100 kg⋅m⋅s⁻²");
+    }
+
+    #[test]
+    fn test_pretty_unit_method() {
+        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
+        let out = format!("{}", n);
+        assert_eq!(out, "100 kg⋅m⋅s⁻²");
+    }
+
+    #[test]
+    fn test_display_int_value() {
+        let m: Unit<i32, Z0, P1> = Unit::new(42);
+        let out = format!("{}", m);
+        assert_eq!(out, "42 m");
+    }
+
+    #[test]
+    fn test_display_neg_exponent_multi_digit() {
+        // Exponent -12 (i8) — tests multi-digit superscript rendering
+        // Use a dimension with N12
+        let big_neg: Unit<f64, Z0, Z0, N12> = Unit::new(1.0);
+        let out = format!("{}", big_neg);
+        assert_eq!(out, "1 s⁻¹²");
+    }
+
+    #[test]
+    fn test_display_pos_exponent_multi_digit() {
+        // Exponent 10 — tests multi-digit positive exponent rendering
+        let big_pos: Unit<f64, Z0, P10> = Unit::new(1.0);
+        let out = format!("{}", big_pos);
+        assert_eq!(out, "1 m¹⁰");
     }
 }
