@@ -84,7 +84,7 @@ where
     /// a way to propagate the fact that an error has occurred back up the
     /// stack.
     pub fn ascii_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        self.fmt_unit(
+        Self::fmt_unit(
             f,
             '*',
             '^',
@@ -105,7 +105,7 @@ where
     /// a way to propagate the fact that an error has occurred back up the
     /// stack.
     pub fn pretty_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        self.fmt_unit(
+        Self::fmt_unit(
             f,
             '⋅',
             EMPTY,
@@ -117,7 +117,6 @@ where
 
     /// Format the unit name using specific char set
     fn fmt_unit(
-        &self,
         f: &mut Formatter<'_>,
         dot: char,
         exp: char,
