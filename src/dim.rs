@@ -136,16 +136,17 @@ where
         let negative = items.iter().filter(|&&(_, exponent)| exponent < 0);
         let unit_name = positive.chain(negative).map(|&(id, exponent)| {
             let mut e = [EMPTY; 5];
-            // Insert exp operator between unit name and exponent
-            e[0] = exp;
 
             let mut idx = 4;
-            let (mut exponent, sign) = match exponent {
-                1 => (0, EMPTY),
-                2.. => (exponent.unsigned_abs(), EMPTY),
-                ..=-1 => (exponent.unsigned_abs(), minus),
+            let (mut exponent, exp, sign) = match exponent {
+                // When exponent is 1, it is completely omitted, so no number or exp operator
+                1 => (0, EMPTY, EMPTY),
+                2.. => (exponent.unsigned_abs(), exp, EMPTY),
+                ..=-1 => (exponent.unsigned_abs(), exp, minus),
                 0 => unreachable!("exp cannot be 0"),
             };
+            // Insert exp operator between unit name and exponent
+            e[0] = exp;
             // Insert the minus sign if exponent is negative
             e[1] = sign;
 
