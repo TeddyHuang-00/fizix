@@ -1,12 +1,12 @@
 [package]
-name = "siunit"
+name = "fizix"
 version = "0.1.0"
 edition = "2024"
 authors = ["Nan Huang <teddyhuangnan@gmail.com>"]
 description = "Compile-time checked SI units via typenum type-level integers"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/TeddyHuang-00/siunit"
+repository = "https://github.com/TeddyHuang-00/fizix"
 keywords = ["units", "dimensions", "si", "const-generics", "type-safe"]
 categories = ["science", "no-std", "mathematics"]
 

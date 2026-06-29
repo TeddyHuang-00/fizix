@@ -1,5 +1,5 @@
 mod inner {
-    use siunit::alias_units;
+    use fizix::alias_units;
 
     alias_units! {
         NotPub => ("private alias"),

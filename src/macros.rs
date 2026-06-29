@@ -17,7 +17,7 @@
 /// # Examples
 ///
 /// ```rust
-/// use siunit::alias_units;
+/// use fizix::alias_units;
 /// use typenum::P1;
 ///
 /// // Type-only alias

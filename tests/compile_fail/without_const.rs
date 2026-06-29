@@ -1,4 +1,4 @@
-use siunit::alias_units;
+use fizix::alias_units;
 
 alias_units! {
     pub Foo => ("type-only, no const helpers"),

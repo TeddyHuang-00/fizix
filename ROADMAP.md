@@ -1,9 +1,9 @@
-# siunit: SI Units at Compile Time
+# fizix: SI Units at Compile Time
 
 **Compile-time checked SI units via [`typenum`](https://crates.io/crates/typenum) type-level integers.**
 Dimension mismatches caught at compile time, zero runtime overhead.
 
-[![Crates.io][crates-badge]](https://crates.io/crates/siunit)
+[![Crates.io][crates-badge]](https://crates.io/crates/fizix)
 
 ## Status
 
@@ -53,18 +53,19 @@ pub struct Unit<V, const M: i8 = 0, …>;
 ```
 
 This approach was abandoned because:
+
 1. `generic_const_exprs` (rust-lang/rust#76560) is unstable and "very broken" per rustc team
 2. Cross-crate usage causes E0275 trait solver overflow
 3. No viable workaround found (packed i64, combined where-clauses, `-Znext-solver` all failed)
 4. The successor feature `generic_const_args` (#151972) is also nightly-only and doesn't allow `{M1 + M2}` in type position
 
-When either feature stabilizes on stable Rust, siunit can offer an optional const-generic backend via a feature flag — but for now, typenum provides a proven, stable foundation (used by `uom` for 8+ years).
+When either feature stabilizes on stable Rust, fizix can offer an optional const-generic backend via a feature flag — but for now, typenum provides a proven, stable foundation (used by `uom` for 8+ years).
 
 ## Comparison
 
 | Crate         | Approach                | Stable | Lines |
 | ------------- | ----------------------- | ------ | ----- |
-| **siunit**    | typenum type-level ints | ✅     | ~300  |
+| **fizix**     | typenum type-level ints | ✅     | ~300  |
 | `uom`         | typenum type-level ints | ✅     | ~90K  |
 | `dimensioned` | typenum type-level ints | ✅     | ~10K  |
 
@@ -72,4 +73,4 @@ When either feature stabilizes on stable Rust, siunit can offer an optional cons
 
 MIT OR Apache-2.0
 
-[crates-badge]: https://img.shields.io/crates/v/siunit.svg
+[crates-badge]: https://img.shields.io/crates/v/fizix.svg

@@ -1,4 +1,4 @@
-//! Using siunit with a custom numeric type: 3D vector arithmetic.
+//! Using fizix with a custom numeric type: 3D vector arithmetic.
 //!
 //! Demonstrates type-safe physics with a custom `Vector` container including
 //! Lorentz force `F = q(E + v × B)`. Note that cross product is mapped to `Mul`
@@ -11,7 +11,7 @@ use core::{
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
-use siunit::{vector::*, *};
+use fizix::{vector::*, *};
 
 /// A custom 3D vector container for directional calculation
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]

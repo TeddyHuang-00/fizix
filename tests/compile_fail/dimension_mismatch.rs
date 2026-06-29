@@ -1,4 +1,4 @@
-use siunit::*;
+use fizix::*;
 // This import is not needed, but makes the error message clearer
 #[allow(unused_imports)]
 use typenum::*;

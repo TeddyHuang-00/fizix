@@ -1,4 +1,4 @@
-# siunit
+# fizix
 
 Compile-time checked SI units via type-level integers.
 
@@ -8,7 +8,7 @@ Dimension mismatches are caught at compile time with zero runtime overhead.
 ## Usage
 
 ```rust
-use siunit::*;
+use fizix::*;
 
 let distance = Meter::new(100.0);
 let time = Second::new(10.0);

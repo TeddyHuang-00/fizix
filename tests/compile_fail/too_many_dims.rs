@@ -1,4 +1,4 @@
-use siunit::alias_units;
+use fizix::alias_units;
 use typenum::*;
 
 alias_units! {

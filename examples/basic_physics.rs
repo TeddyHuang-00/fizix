@@ -1,8 +1,8 @@
-//! Basic physics calculations with siunit type-safe dimensions.
+//! Basic physics calculations with fizix type-safe dimensions.
 //!
 //! Run with: `cargo run --example basic_physics`
 
-use siunit::*;
+use fizix::*;
 
 // Note that the type annotations are all optional, as they can be inferred by
 // the compiler. We just add them here to see that it can be used to provide

@@ -9,7 +9,7 @@
 //! # Example
 //!
 //! ```
-//! use siunit::vector::*;
+//! use fizix::vector::*;
 //!
 //! struct Vector3([f64; 3]);
 //!

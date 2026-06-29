@@ -27,7 +27,7 @@ const EMPTY: char = '\0';
 /// # Examples
 ///
 /// ```
-/// use siunit::Unit;
+/// use fizix::Unit;
 ///
 /// let d: Unit<f64, typenum::consts::P1> = Unit::new(5.0); // 5.0 kg
 /// assert_eq!(d.value, 5.0);

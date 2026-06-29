@@ -1,4 +1,4 @@
-use siunit::alias_units;
+use fizix::alias_units;
 
 alias_units! {
     const pub Foo => ("const before vis, wrong position"),

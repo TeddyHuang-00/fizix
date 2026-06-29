@@ -1,4 +1,4 @@
-//! Integration tests for siunit demonstrating real-world physics scenarios.
+//! Integration tests for fizix demonstrating real-world physics scenarios.
 //!
 //! # Notes
 //!
@@ -6,7 +6,7 @@
 //! via the `trybuild` test at the bottom of this file, not via doc-tests
 //! (which aren't collected from integration test crates by `cargo test`).
 
-use siunit::*;
+use fizix::*;
 
 macro_rules! assert_display {
     ($x:expr, $pretty:literal, $ascii:literal) => {

@@ -10,7 +10,7 @@ use std::{
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
-use siunit::*;
+use fizix::*;
 use typenum::*;
 
 /// A custom value type representing a measurement in meters, stored as mm

@@ -1,4 +1,4 @@
-//! **siunit**: Compile-time checked SI units via type-level integers.
+//! **fizix**: Compile-time checked SI units via type-level integers.
 //!
 //! Every physical quantity carries its dimension as [`typenum`] type
 //! parameters. Dimension mismatches are caught at compile time with zero
@@ -7,7 +7,7 @@
 //! # Example
 //!
 //! ```rust
-//! use siunit::*;
+//! use fizix::*;
 //!
 //! let d = Meter::new(100.0);
 //! let t = Second::new(10.0);
