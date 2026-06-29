@@ -1,3 +1,5 @@
+//! The [`alias_units!`] macro and its supporting helpers.
+
 /// Create `Unit` type aliases, optionally with const helpers.
 ///
 /// For each entry, this generates:
