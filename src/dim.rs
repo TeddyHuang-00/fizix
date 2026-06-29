@@ -225,9 +225,10 @@ impl<V> From<V> for Unit<V> {
 // Add / Sub: same type
 macro_rules! impl_add_sub {
     ($trait:ident, $fn:ident) => {
-        impl<U, V, M, L, T, I, K, N, J> $trait for Unit<U, M, L, T, I, K, N, J>
+        impl<V1, V2, V, M, L, T, I, K, N, J> $trait<Unit<V2, M, L, T, I, K, N, J>>
+            for Unit<V1, M, L, T, I, K, N, J>
         where
-            U: $trait<Output = V>,
+            V1: $trait<V2, Output = V>,
             M: Integer,
             L: Integer,
             T: Integer,
@@ -239,7 +240,7 @@ macro_rules! impl_add_sub {
             type Output = Unit<V, M, L, T, I, K, N, J>;
 
             #[inline]
-            fn $fn(self, rhs: Self) -> Self::Output {
+            fn $fn(self, rhs: Unit<V2, M, L, T, I, K, N, J>) -> Self::Output {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
@@ -252,10 +253,10 @@ impl_add_sub!(Sub, sub);
 // Mul / Div: dimension exponents addition/subtraction
 macro_rules! impl_mul_div {
     ($trait:ident, $fn:ident, $op_trait:ident) => {
-        impl<U, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
-            $trait<Unit<U, M2, L2, T2, I2, K2, N2, J2>> for Unit<U, M1, L1, T1, I1, K1, N1, J1>
+        impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
+            $trait<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
         where
-            U: $trait<Output = V>,
+            V1: $trait<V2, Output = V>,
             M1: $op_trait<M2, Output = M>,
             L1: $op_trait<L2, Output = L>,
             T1: $op_trait<T2, Output = T>,
@@ -274,7 +275,7 @@ macro_rules! impl_mul_div {
             type Output = Unit<V, M, L, T, I, K, N, J>;
 
             #[inline]
-            fn $fn(self, rhs: Unit<U, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+            fn $fn(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
