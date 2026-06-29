@@ -313,6 +313,15 @@ mod tests {
 
     use super::*;
 
+    macro_rules! assert_display {
+        ($x:ident, $pretty:literal, $ascii:literal) => {
+            #[cfg(feature = "pretty-display")]
+            assert_eq!(format!("{}", $x), $pretty);
+            #[cfg(not(feature = "pretty-display"))]
+            assert_eq!(format!("{}", $x), $ascii);
+        };
+    }
+
     #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
     struct X;
 
@@ -522,40 +531,35 @@ mod tests {
     fn test_display_single_positive_dim() {
         // length (m) — exponent 1, no exponent marker
         let m: Unit<f64, Z0, P1> = Unit::new(5.0);
-        let out = format!("{}", m);
-        assert_eq!(out, "5 m");
+        assert_display!(m, "5 m", "5 m");
     }
 
     #[test]
     fn test_display_single_negative_dim() {
         // frequency (s⁻¹ = Hz) — negative exponent -1
         let hz: Unit<f64, Z0, Z0, N1> = Unit::new(440.0);
-        let out = format!("{}", hz);
-        assert_eq!(out, "440 s⁻¹");
+        assert_display!(hz, "440 s⁻¹", "440 s^-1");
     }
 
     #[test]
     fn test_display_single_higher_positive_dim() {
         // Area (m²) — exponent 2
         let area: Unit<f64, Z0, P2> = Unit::new(25.0);
-        let out = format!("{}", area);
-        assert_eq!(out, "25 m²");
+        assert_display!(area, "25 m²", "25 m^2");
     }
 
     #[test]
     fn test_display_multi_dim_pos_neg() {
         // Velocity (m⋅s⁻¹) = length^1, time^-1
         let v: Unit<f64, Z0, P1, N1> = Unit::new(10.0);
-        let out = format!("{}", v);
-        assert_eq!(out, "10 m⋅s⁻¹");
+        assert_display!(v, "10 m⋅s⁻¹", "10 m*s^-1");
     }
 
     #[test]
     fn test_display_three_dim_pos_neg() {
         // Newton-like: kg⋅m⋅s⁻²  (P1, P1, N2)
         let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
-        let out = format!("{}", n);
-        assert_eq!(out, "100 kg⋅m⋅s⁻²");
+        assert_display!(n, "100 kg⋅m⋅s⁻²", "100 kg*m*s^-2");
     }
 
     #[test]
@@ -563,39 +567,24 @@ mod tests {
         // Siemens-like (conductance): kg⁻¹⋅m⁻²⋅s³⋅A²
         // dim: N1, N2, P3, P2
         let s: Unit<f64, N1, N2, P3, P2> = Unit::new(2.0);
-        let out = format!("{}", s);
-        assert_eq!(out, "2 s³⋅A²⋅kg⁻¹⋅m⁻²");
+        assert_display!(s, "2 s³⋅A²⋅kg⁻¹⋅m⁻²", "2 s^3*A^2*kg^-1*m^-2");
     }
 
     #[test]
     fn test_display_all_negative() {
         // All negative exponents
         let all_neg: Unit<f64, N1, N2, N3, N1, N1, N1, N1> = Unit::new(1.0);
-        let out = format!("{}", all_neg);
-        assert_eq!(out, "1 kg⁻¹⋅m⁻²⋅s⁻³⋅A⁻¹⋅K⁻¹⋅mol⁻¹⋅cd⁻¹");
-    }
-
-    #[test]
-    fn test_ascii_unit_method() {
-        // Test display formatting (via Display impl)
-        // With pretty-display feature default, this renders as pretty
-        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
-        let out = format!("{}", n);
-        assert_eq!(out, "100 kg⋅m⋅s⁻²");
-    }
-
-    #[test]
-    fn test_pretty_unit_method() {
-        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
-        let out = format!("{}", n);
-        assert_eq!(out, "100 kg⋅m⋅s⁻²");
+        assert_display!(
+            all_neg,
+            "1 kg⁻¹⋅m⁻²⋅s⁻³⋅A⁻¹⋅K⁻¹⋅mol⁻¹⋅cd⁻¹",
+            "1 kg^-1*m^-2*s^-3*A^-1*K^-1*mol^-1*cd^-1"
+        );
     }
 
     #[test]
     fn test_display_int_value() {
         let m: Unit<i32, Z0, P1> = Unit::new(42);
-        let out = format!("{}", m);
-        assert_eq!(out, "42 m");
+        assert_display!(m, "42 m", "42 m");
     }
 
     #[test]
@@ -603,15 +592,13 @@ mod tests {
         // Exponent -12 (i8) — tests multi-digit superscript rendering
         // Use a dimension with N12
         let big_neg: Unit<f64, Z0, Z0, N12> = Unit::new(1.0);
-        let out = format!("{}", big_neg);
-        assert_eq!(out, "1 s⁻¹²");
+        assert_display!(big_neg, "1 s⁻¹²", "1 s^-12");
     }
 
     #[test]
     fn test_display_pos_exponent_multi_digit() {
         // Exponent 10 — tests multi-digit positive exponent rendering
         let big_pos: Unit<f64, Z0, P10> = Unit::new(1.0);
-        let out = format!("{}", big_pos);
-        assert_eq!(out, "1 m¹⁰");
+        assert_display!(big_pos, "1 m¹⁰", "1 m^10");
     }
 }

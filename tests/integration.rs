@@ -8,6 +8,15 @@
 
 use siunit::*;
 
+macro_rules! assert_display {
+    ($x:expr, $pretty:literal, $ascii:literal) => {
+        #[cfg(feature = "pretty-display")]
+        assert_eq!(format!("{}", $x), $pretty);
+        #[cfg(not(feature = "pretty-display"))]
+        assert_eq!(format!("{}", $x), $ascii);
+    };
+}
+
 /// Real-world physics: calculate average speed
 ///
 /// A car travels 1000 meters in 10 seconds.
@@ -95,8 +104,7 @@ fn integer_arithmetic() {
 #[test]
 fn display_scalar() {
     let s: Unit<f64> = Scalar::new(3.14);
-    let out = format!("{}", s);
-    assert_eq!(out, "3.14");
+    assert_display!(s, "3.14", "3.14");
 }
 
 /// Display output for single base unit
@@ -106,9 +114,9 @@ fn display_base_units() {
     let m = Meter::new(10.0);
     let s = Second::new(60.0);
 
-    assert_eq!(format!("{}", kg), "5 kg");
-    assert_eq!(format!("{}", m), "10 m");
-    assert_eq!(format!("{}", s), "60 s");
+    assert_display!(kg, "5 kg", "5 kg");
+    assert_display!(m, "10 m", "10 m");
+    assert_display!(s, "60 s", "60 s");
 }
 
 /// Display output for derived units with names
@@ -123,14 +131,14 @@ fn display_derived_units() {
     let voltage = Volt::new(230.0);
     let resistance = Ohm::new(100.0);
 
-    assert_eq!(format!("{}", force), "100 kg⋅m⋅s⁻²");
-    assert_eq!(format!("{}", pressure), "101325 kg⋅m⁻¹⋅s⁻²");
-    assert_eq!(format!("{}", energy), "42 kg⋅m²⋅s⁻²");
-    assert_eq!(format!("{}", power), "1000 kg⋅m²⋅s⁻³");
-    assert_eq!(format!("{}", freq), "440 s⁻¹");
-    assert_eq!(format!("{}", charge), "1 s⋅A");
-    assert_eq!(format!("{}", voltage), "230 kg⋅m²⋅s⁻³⋅A⁻¹");
-    assert_eq!(format!("{}", resistance), "100 kg⋅m²⋅s⁻³⋅A⁻²");
+    assert_display!(force, "100 kg⋅m⋅s⁻²", "100 kg*m*s^-2");
+    assert_display!(pressure, "101325 kg⋅m⁻¹⋅s⁻²", "101325 kg*m^-1*s^-2");
+    assert_display!(energy, "42 kg⋅m²⋅s⁻²", "42 kg*m^2*s^-2");
+    assert_display!(power, "1000 kg⋅m²⋅s⁻³", "1000 kg*m^2*s^-3");
+    assert_display!(freq, "440 s⁻¹", "440 s^-1");
+    assert_display!(charge, "1 s⋅A", "1 s*A");
+    assert_display!(voltage, "230 kg⋅m²⋅s⁻³⋅A⁻¹", "230 kg*m^2*s^-3*A^-1");
+    assert_display!(resistance, "100 kg⋅m²⋅s⁻³⋅A⁻²", "100 kg*m^2*s^-3*A^-2");
 }
 
 /// Display output from chained arithmetic operations
@@ -141,11 +149,11 @@ fn display_chained_arithmetic() {
     let speed = distance / time;
 
     // Speed is Velocity<f64> = m⋅s⁻¹
-    assert_eq!(format!("{}", speed), "100 m⋅s⁻¹");
+    assert_display!(speed, "100 m⋅s⁻¹", "100 m*s^-1");
 
     // Work: force * distance = 1 N * 1 m = 1 J
     let work = NEWTON * METER;
-    assert_eq!(format!("{}", work), "1 kg⋅m²⋅s⁻²");
+    assert_display!(work, "1 kg⋅m²⋅s⁻²", "1 kg*m^2*s^-2");
 }
 
 /// Display with integer value types in integration context
@@ -154,7 +162,7 @@ fn display_integer_types() {
     let d = Meter::new(1000i32);
     let t = Second::new(10i32);
     let speed = d / t;
-    assert_eq!(format!("{}", speed), "100 m⋅s⁻¹");
+    assert_display!(speed, "100 m⋅s⁻¹", "100 m*s^-1");
 }
 
 /// Verify that adding meters and seconds is rejected at compile time.

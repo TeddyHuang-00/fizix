@@ -11,10 +11,12 @@ deps:
 # Check for errors
 check: && format
     cargo clippy --fix --allow-staged
+    cargo clippy --no-default-features --fix --allow-staged
 
 # Unit tests
 test: check
     cargo test
+    cargo test --no-default-features
 
 # Coverage report
 coverage: check
