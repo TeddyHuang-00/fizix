@@ -25,6 +25,7 @@
 mod dim;
 pub mod macros;
 mod units;
+pub mod vector;
 
 pub use dim::Unit;
 // Re-export paste for macro_rules hygiene.

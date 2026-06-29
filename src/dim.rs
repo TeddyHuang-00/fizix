@@ -6,6 +6,8 @@ use core::{
 
 use typenum::{Integer, Z0};
 
+use crate::vector::{CrossProduct, DotProduct, VectorNorm};
+
 const EMPTY: char = '\0';
 
 /// A physical quantity with compile-time dimension checking.
@@ -307,6 +309,80 @@ where
     #[inline]
     fn neg(self) -> Self::Output {
         Unit::new(-self.value)
+    }
+}
+
+// Vector arithmetic: dot, cross, norm
+impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
+    DotProduct<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
+where
+    V1: DotProduct<V2, Output = V>,
+    M1: Add<M2, Output = M>,
+    L1: Add<L2, Output = L>,
+    T1: Add<T2, Output = T>,
+    I1: Add<I2, Output = I>,
+    K1: Add<K2, Output = K>,
+    N1: Add<N2, Output = N>,
+    J1: Add<J2, Output = J>,
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
+{
+    type Output = Unit<V, M, L, T, I, K, N, J>;
+
+    #[inline]
+    fn dot(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+        Unit::new(self.value.dot(rhs.value))
+    }
+}
+
+impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
+    CrossProduct<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
+where
+    V1: CrossProduct<V2, Output = V>,
+    M1: Add<M2, Output = M>,
+    L1: Add<L2, Output = L>,
+    T1: Add<T2, Output = T>,
+    I1: Add<I2, Output = I>,
+    K1: Add<K2, Output = K>,
+    N1: Add<N2, Output = N>,
+    J1: Add<J2, Output = J>,
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
+{
+    type Output = Unit<V, M, L, T, I, K, N, J>;
+
+    #[inline]
+    fn cross(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+        Unit::new(self.value.cross(rhs.value))
+    }
+}
+
+impl<U, V, M, L, T, I, K, N, J> VectorNorm for Unit<V, M, L, T, I, K, N, J>
+where
+    V: VectorNorm<Output = U>,
+    M: Integer,
+    L: Integer,
+    T: Integer,
+    I: Integer,
+    K: Integer,
+    N: Integer,
+    J: Integer,
+{
+    type Output = Unit<U, M, L, T, I, K, N, J>;
+
+    #[inline]
+    fn norm(self) -> Self::Output {
+        Unit::new(self.value.norm())
     }
 }
 
