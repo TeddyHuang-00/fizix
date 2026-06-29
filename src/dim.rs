@@ -73,6 +73,11 @@ where
         }
     }
 
+    /// Applies a function to underlying value to access unary operator on it
+    pub fn apply<U>(self, func: fn(V) -> U) -> Unit<U, M, L, T, I, K, N, J> {
+        Unit::new(func(self.value))
+    }
+
     /// Format the unit name using ASCII symbols
     ///
     /// # Errors

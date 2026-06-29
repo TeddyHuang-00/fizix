@@ -103,9 +103,9 @@ fn main() {
     // Now we can have the total acceleration
     let acceleration: Acceleration<_> = (force_a + force_b + force_c) / object_mass;
     println!(
-        "Acceleration is {} ({})",
+        "Acceleration is {} ({:.3})",
         acceleration,
-        acceleration.value.abs()
+        acceleration.apply(|v| v.abs())
     );
 
     // Now a particle with 1 C charge (I know, I know, this is purely fictional so
@@ -119,8 +119,8 @@ fn main() {
     // Now we have the total force on the particle (F = q (E + v × B))
     let force: Newton<_> = charge * (electric_field + velocity * magnetic_field);
     println!(
-        "Total force in EM field is {} ({})",
+        "Total force in EM field is {} ({:.3})",
         force,
-        force.value.abs()
+        force.apply(|v| v.abs())
     );
 }
