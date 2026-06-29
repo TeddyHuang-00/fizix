@@ -530,21 +530,21 @@ mod tests {
 
     #[test]
     fn test_display_single_positive_dim() {
-        // length (m) — exponent 1, no exponent marker
+        // length (m) - exponent 1, no exponent marker
         let m: Unit<f64, Z0, P1> = Unit::new(5.0);
         assert_display!(m, "5 m", "5 m");
     }
 
     #[test]
     fn test_display_single_negative_dim() {
-        // frequency (s⁻¹ = Hz) — negative exponent -1
+        // frequency (s⁻¹ = Hz) - negative exponent -1
         let hz: Unit<f64, Z0, Z0, N1> = Unit::new(440.0);
         assert_display!(hz, "440 s⁻¹", "440 s^-1");
     }
 
     #[test]
     fn test_display_single_higher_positive_dim() {
-        // Area (m²) — exponent 2
+        // Area (m²) - exponent 2
         let area: Unit<f64, Z0, P2> = Unit::new(25.0);
         assert_display!(area, "25 m²", "25 m^2");
     }
@@ -590,7 +590,7 @@ mod tests {
 
     #[test]
     fn test_display_neg_exponent_multi_digit() {
-        // Exponent -12 (i8) — tests multi-digit superscript rendering
+        // Exponent -12 (i8) - tests multi-digit superscript rendering
         // Use a dimension with N12
         let big_neg: Unit<f64, Z0, Z0, N12> = Unit::new(1.0);
         assert_display!(big_neg, "1 s⁻¹²", "1 s^-12");
@@ -598,7 +598,7 @@ mod tests {
 
     #[test]
     fn test_display_pos_exponent_multi_digit() {
-        // Exponent 10 — tests multi-digit positive exponent rendering
+        // Exponent 10 - tests multi-digit positive exponent rendering
         let big_pos: Unit<f64, Z0, P10> = Unit::new(1.0);
         assert_display!(big_pos, "1 m¹⁰", "1 m^10");
     }

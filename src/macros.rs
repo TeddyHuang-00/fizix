@@ -1,11 +1,11 @@
 /// Create `Unit` type aliases, optionally with const helpers.
 ///
 /// For each entry, this generates:
-/// - `Name<V>` — type alias
+/// - `Name<V>` - type alias
 ///
 /// If the entry uses `const` (after `=>`), it also generates:
-/// - `name<V>(v: V) -> Name<V>` — const helper function
-/// - `NAME: Name<f64>` — const value of `1.0`
+/// - `name<V>(v: V) -> Name<V>` - const helper function
+/// - `NAME: Name<f64>` - const value of `1.0`
 ///
 /// Each invocation handles a single entry or multiple entries separated by
 /// commas. And each entry can include a single alias or multiple aliases
