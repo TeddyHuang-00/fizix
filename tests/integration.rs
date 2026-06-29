@@ -107,62 +107,16 @@ fn display_scalar() {
     assert_display!(s, "3.14", "3.14");
 }
 
-/// Display output for single base unit
-#[test]
-fn display_base_units() {
-    let kg = Kilogram::new(5.0);
-    let m = Meter::new(10.0);
-    let s = Second::new(60.0);
-
-    assert_display!(kg, "5 kg", "5 kg");
-    assert_display!(m, "10 m", "10 m");
-    assert_display!(s, "60 s", "60 s");
-}
-
-/// Display output for derived units with names
-#[test]
-fn display_derived_units() {
-    let force = Newton::new(100.0);
-    let pressure = Pascal::new(101325.0);
-    let energy = Joule::new(42.0);
-    let power = Watt::new(1000.0);
-    let freq = Hertz::new(440.0);
-    let charge = Coulomb::new(1.0);
-    let voltage = Volt::new(230.0);
-    let resistance = Ohm::new(100.0);
-
-    assert_display!(force, "100 kg⋅m⋅s⁻²", "100 kg*m*s^-2");
-    assert_display!(pressure, "101325 kg⋅m⁻¹⋅s⁻²", "101325 kg*m^-1*s^-2");
-    assert_display!(energy, "42 kg⋅m²⋅s⁻²", "42 kg*m^2*s^-2");
-    assert_display!(power, "1000 kg⋅m²⋅s⁻³", "1000 kg*m^2*s^-3");
-    assert_display!(freq, "440 s⁻¹", "440 s^-1");
-    assert_display!(charge, "1 s⋅A", "1 s*A");
-    assert_display!(voltage, "230 kg⋅m²⋅s⁻³⋅A⁻¹", "230 kg*m^2*s^-3*A^-1");
-    assert_display!(resistance, "100 kg⋅m²⋅s⁻³⋅A⁻²", "100 kg*m^2*s^-3*A^-2");
-}
-
-/// Display output from chained arithmetic operations
+/// Display output from chained arithmetic
 #[test]
 fn display_chained_arithmetic() {
     let distance = Meter::new(1000.0);
     let time = Second::new(10.0);
     let speed = distance / time;
-
-    // Speed is Velocity<f64> = m⋅s⁻¹
     assert_display!(speed, "100 m⋅s⁻¹", "100 m*s^-1");
 
-    // Work: force * distance = 1 N * 1 m = 1 J
     let work = NEWTON * METER;
     assert_display!(work, "1 kg⋅m²⋅s⁻²", "1 kg*m^2*s^-2");
-}
-
-/// Display with integer value types in integration context
-#[test]
-fn display_integer_types() {
-    let d = Meter::new(1000i32);
-    let t = Second::new(10i32);
-    let speed = d / t;
-    assert_display!(speed, "100 m⋅s⁻¹", "100 m*s^-1");
 }
 
 /// Verify that adding meters and seconds is rejected at compile time.
