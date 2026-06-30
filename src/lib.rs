@@ -13,6 +13,10 @@
 //! let t = Second::new(10.0);
 //! let _ = d + d;               // OK: same dimension
 //! // let _ = d + t;            // ❌ compile error: dimension mismatch
+//!
+//! // Type-level scale prefixes:
+//! let km = Kilometer::new(1.0);
+//! let m: Meter<f64> = km.to_base();  // 1000 m
 //! ```
 //!
 //! Type-safe dimension arithmetic is achieved through `Mul`/`Div` with
