@@ -1,1 +1,1 @@
-doc-valid-idents = ["MPa", "GPa", ".."]
+doc-valid-idents = ["MPa", "GPa", "MBq", "GBq", ".."]

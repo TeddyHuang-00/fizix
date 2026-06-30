@@ -1,4 +1,6 @@
-use typenum::{N1, N2, N3, N4, N6, N9, N10, N12, P1, P2, P3, P4, P5, P6, P9, P12, Z0};
+use typenum::{
+    N1, N2, N3, N4, N5, N6, N9, N10, N12, N15, N18, P1, P2, P3, P4, P5, P6, P9, P12, Z0,
+};
 
 use crate::alias_units;
 
@@ -170,72 +172,135 @@ alias_units! {
 // Same types of different common scales
 alias_units! {
     // Name        => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigatonne  => const ("Mass (Gt)", P12, P1, __, __, __, __, __, __),
+    pub Megatonne  => const ("Mass (Mt)",  P9, P1, __, __, __, __, __, __),
+    pub Kilotonne  => const ("Mass (kt)",  P6, P1, __, __, __, __, __, __),
     pub Tonne      => const ("Mass (t)",   P3, P1, __, __, __, __, __, __),
     pub Gram       => const ("Mass (g)",   N3, P1, __, __, __, __, __, __),
     pub Milligram  => const ("Mass (mg)",  N6, P1, __, __, __, __, __, __),
     pub Microgram  => const ("Mass (µg)",  N9, P1, __, __, __, __, __, __),
     pub Nanogram   => const ("Mass (ng)", N12, P1, __, __, __, __, __, __),
+    pub Picogram   => const ("Mass (pg)", N15, P1, __, __, __, __, __, __),
+    pub Femtogram  => const ("Mass (fg)", N18, P1, __, __, __, __, __, __),
+
+    // Name        => const (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigameter  => const ("Length (Gm)",  P9, __, P1, __, __, __, __, __),
+    pub Megameter  => const ("Length (Mm)",  P6, __, P1, __, __, __, __, __),
+    pub Kilometer  => const ("Length (km)",  P3, __, P1, __, __, __, __, __),
+    pub Decimeter  => const ("Length (dm)",  N1, __, P1, __, __, __, __, __),
+    pub Centimeter => const ("Length (cm)",  N2, __, P1, __, __, __, __, __),
+    pub Millimeter => const ("Length (mm)",  N3, __, P1, __, __, __, __, __),
+    pub Micrometer => const ("Length (µm)",  N6, __, P1, __, __, __, __, __),
+    pub Nanometer  => const ("Length (nm)",  N9, __, P1, __, __, __, __, __),
+    pub Angstrom   => const ("Length (Å)",  N10, __, P1, __, __, __, __, __),
+    pub Picometer  => const ("Length (pm)", N12, __, P1, __, __, __, __, __),
+    pub Femtometer => const ("Length (fm)", N15, __, P1, __, __, __, __, __),
+
+    // Name         => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millisecond => const ("Time (ms)",  N3, __, __, P1, __, __, __, __),
+    pub Microsecond => const ("Time (µs)",  N6, __, __, P1, __, __, __, __),
+    pub Nanosecond  => const ("Time (ns)",  N9, __, __, P1, __, __, __, __),
+    pub Picosecond  => const ("Time (ps)", N12, __, __, P1, __, __, __, __),
+    pub Femtosecond => const ("Time (fs)", N15, __, __, P1, __, __, __, __),
+    pub Attosecond  => const ("Time (as)", N18, __, __, P1, __, __, __, __),
+
+    // Name         => const (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub Megaampere  => const ("Current (MA)", P6, __, __, __, P1, __, __, __),
+    pub Kiloampere  => const ("Current (kA)", P3, __, __, __, P1, __, __, __),
+    pub Milliampere => const ("Current (mA)", N3, __, __, __, P1, __, __, __),
+    pub Microampere => const ("Current (µA)", N6, __, __, __, P1, __, __, __),
+    pub Nanoampere  => const ("Current (nA)", N9, __, __, __, P1, __, __, __),
+
+    // Name       => const (Doc,          scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kilomole  => const ("Amount (kmol)", P3, __, __, __, __, __, P1, __),
+    pub Millimole => const ("Amount (mmol)", N3, __, __, __, __, __, P1, __),
+    pub Micromole => const ("Amount (µmol)", N6, __, __, __, __, __, P1, __),
+    pub Nanomole  => const ("Amount (nmol)", N9, __, __, __, __, __, P1, __),
+
+
+    // Name        => const (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub Litre      => const ("Volume (L)",   N3, __, P3, __, __, __, __, __),
+    pub Deciliter  => const ("Volume (dL)",  N4, __, P3, __, __, __, __, __),
+    pub Centiliter => const ("Volume (cL)",  N5, __, P3, __, __, __, __, __),
+    pub Millilitre => const ("Volume (mL)",  N6, __, P3, __, __, __, __, __),
+    pub Microlitre => const ("Volume (µL)",  N9, __, P3, __, __, __, __, __),
+    pub Nanoliter  => const ("Volume (nL)", N12, __, P3, __, __, __, __, __),
+
+    // Name        => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
+    pub Terahertz  => const ("Frequency (THz)", P12, __, __, N1, __, __, __, __),
+    pub Gigahertz  => const ("Frequency (GHz)",  P9, __, __, N1, __, __, __, __),
+    pub Megahertz  => const ("Frequency (MHz)",  P6, __, __, N1, __, __, __, __),
+    pub Kilohertz  => const ("Frequency (kHz)",  P3, __, __, N1, __, __, __, __),
+    pub Millihertz => const ("Frequency (mHz)",  N3, __, __, N1, __, __, __, __),
+
+    // Name         => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Meganewton  => const ("Force (MN)", P6, P1, P1, N2, __, __, __, __),
+    pub Kilonewton  => const ("Force (kN)", P3, P1, P1, N2, __, __, __, __),
+    pub Millinewton => const ("Force (mN)", N3, P1, P1, N2, __, __, __, __),
+    pub Micronewton => const ("Force (µN)", N6, P1, P1, N2, __, __, __, __),
+
+    // Name         => const (Doc,            scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigapascal  => const ("Pressure (GPa)",  P9, P1, N1, N2, __, __, __, __),
+    pub Megapascal  => const ("Pressure (MPa)",  P6, P1, N1, N2, __, __, __, __),
+    pub Bar         => const ("Pressure (bar)",  P5, P1, N1, N2, __, __, __, __),
+    pub Kilopascal  => const ("Pressure (kPa)",  P3, P1, N1, N2, __, __, __, __),
+    pub Hectopascal => const ("Pressure (hPa)",  P2, P1, N1, N2, __, __, __, __),
+    pub Millibar    => const ("Pressure (mbar)", P2, P1, N1, N2, __, __, __, __),
+    pub Millipascal => const ("Pressure (mPa)",  N3, P1, N1, N2, __, __, __, __),
 
     // Name        => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
-    pub Kilometer  => const ("Length (km)", P3, __, P1, __, __, __, __, __),
-    pub Decimeter  => const ("Length (dm)", N1, __, P1, __, __, __, __, __),
-    pub Centimeter => const ("Length (cm)", N2, __, P1, __, __, __, __, __),
-    pub Millimeter => const ("Length (mm)", N3, __, P1, __, __, __, __, __),
-    pub Micrometer => const ("Length (µm)", N6, __, P1, __, __, __, __, __),
-    pub Nanometer  => const ("Length (nm)", N9, __, P1, __, __, __, __, __),
-    pub Angstrom   => const ("Length (Å)", N10, P1, __, __, __, __, __, __),
+    pub Gigajoule  => const ("Energy (GJ)", P9, P1, P2, N2, __, __, __, __),
+    pub Megajoule  => const ("Energy (MJ)", P6, P1, P2, N2, __, __, __, __),
+    pub Kilojoule  => const ("Energy (kJ)", P3, P1, P2, N2, __, __, __, __),
+    pub Millijoule => const ("Energy (mJ)", N3, P1, P2, N2, __, __, __, __),
+    pub Microjoule => const ("Energy (µJ)", N6, P1, P2, N2, __, __, __, __),
 
-    // Name         => const (Doc,      scale, kg,  m, s,  A,  K, mol, cd)
-    pub Millisecond => const ("Time (ms)", N3, __, __, P1, __, __, __, __),
-    pub Microsecond => const ("Time (µs)", N6, __, __, P1, __, __, __, __),
-    pub Nanosecond  => const ("Time (ns)", N9, __, __, P1, __, __, __, __),
-
-    // Name         => const (Doc,                  scale, kg,  m, s,  A,  K, mol, cd)
-    pub Kiloampere  => const ("Electric Current (kA)", P3, __, __, __, P1, __, __, __),
-    pub Milliampere => const ("Electric Current (mA)", N3, __, __, __, P1, __, __, __),
-    pub Microampere => const ("Electric Current (µA)", N6, __, __, __, P1, __, __, __),
-
-    // Name        => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
-    pub Litre      => const ("Volume (L)",  N3, __, P3, __, __, __, __, __),
-    pub Millilitre => const ("Volume (mL)", N6, __, P3, __, __, __, __, __),
-    pub Microlitre => const ("Volume (µL)", N6, __, P3, __, __, __, __, __),
-
-    // Name       => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
-    pub Terahertz => const ("Frequency (THz)", P12, __, __, N1, __, __, __, __),
-    pub Gigahertz => const ("Frequency (GHz)",  P9, __, __, N1, __, __, __, __),
-    pub Megahertz => const ("Frequency (MHz)",  P6, __, __, N1, __, __, __, __),
-    pub Kilohertz => const ("Frequency (kHz)",  P3, __, __, N1, __, __, __, __),
-
-    // Name        => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
-    pub Kilonewton => const ("Force (kN)", P3, P1, P1, N2, __, __, __, __),
-
-    // Name        => const (Doc,           scale, kg,  m, s,  A,  K, mol, cd)
-    pub Gigapascal => const ("Pressure (GPa)", P9, P1, N1, N2, __, __, __, __),
-    pub Megapascal => const ("Pressure (MPa)", P6, P1, N1, N2, __, __, __, __),
-    pub Bar        => const ("Pressure (bar)", P5, P1, N1, N2, __, __, __, __),
-    pub Kilopascal => const ("Pressure (kPa)", P3, P1, N1, N2, __, __, __, __),
-
-    // Name       => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
-    pub Kilojoule => const ("Energy (kJ)", P3, P1, P2, N2, __, __, __, __),
-
-    // Name      => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
-    pub Gigawatt => const ("Power (GW)", P9, P1, P2, N3, __, __, __, __),
-    pub Megawatt => const ("Power (MW)", P6, P1, P2, N3, __, __, __, __),
-    pub Kilowatt => const ("Power (kW)", P3, P1, P2, N3, __, __, __, __),
+    // Name       => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigawatt  => const ("Power (GW)", P9, P1, P2, N3, __, __, __, __),
+    pub Megawatt  => const ("Power (MW)", P6, P1, P2, N3, __, __, __, __),
+    pub Kilowatt  => const ("Power (kW)", P3, P1, P2, N3, __, __, __, __),
+    pub Milliwatt => const ("Power (mW)", N3, P1, P2, N3, __, __, __, __),
+    pub Microwatt => const ("Power (µW)", N6, P1, P2, N3, __, __, __, __),
+    pub Nanowatt  => const ("Power (nW)", N9, P1, P2, N3, __, __, __, __),
 
     // Name       => const (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
     pub Megavolt  => const ("Voltage (MV)", P6, P1, P2, N3, N1, __, __, __),
     pub Kilovolt  => const ("Voltage (kV)", P3, P1, P2, N3, N1, __, __, __),
     pub Millivolt => const ("Voltage (mV)", N3, P1, P2, N3, N1, __, __, __),
     pub Microvolt => const ("Voltage (µV)", N6, P1, P2, N3, N1, __, __, __),
+    pub Nanovolt  => const ("Voltage (nV)", N9, P1, P2, N3, N1, __, __, __),
 
-    // Name     => const (Doc,            scale, kg,  m, s,  A,  K, mol, cd)
-    pub Megaohm => const ("Resistance (MΩ)", P6, P1, P2, N3, N2, __, __, __),
-    pub Kiloohm => const ("Resistance (kΩ)", P3, P1, P2, N3, N2, __, __, __),
+    // Name      => const (Doc,            scale, kg,  m, s,  A,  K, mol, cd)
+    pub Megaohm  => const ("Resistance (MΩ)", P6, P1, P2, N3, N2, __, __, __),
+    pub Kiloohm  => const ("Resistance (kΩ)", P3, P1, P2, N3, N2, __, __, __),
+    pub Milliohm => const ("Resistance (mΩ)", N3, P1, P2, N3, N2, __, __, __),
+    pub Microohm => const ("Resistance (µΩ)", N6, P1, P2, N3, N2, __, __, __),
 
-    // Name        => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
-    pub Millifarad => const ("Capacitance (mF)", N3, N1, N2, P4, P2, __, __, __),
-    pub Microfarad => const ("Capacitance (µF)", N6, N1, N2, P4, P2, __, __, __),
+    // Name        => const (Doc,              scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millifarad => const ("Capacitance (mF)",  N3, N1, N2, P4, P2, __, __, __),
+    pub Microfarad => const ("Capacitance (µF)",  N6, N1, N2, P4, P2, __, __, __),
+    pub Nanofarad  => const ("Capacitance (nF)",  N9, N1, N2, P4, P2, __, __, __),
+    pub Picofarad  => const ("Capacitance (pF)", N12, N1, N2, P4, P2, __, __, __),
+
+    // Name          => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millisiemens => const ("Conductance (mS)", N3, N1, N2, P3, P2, __, __, __),
+    pub Microsiemens => const ("Conductance (µS)", N6, N1, N2, P3, P2, __, __, __),
+
+    // Name        => const (Doc,              scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millitesla => const ("Flux density (mT)", N3, P1, __, N2, N1, __, __, __),
+    pub Microtesla => const ("Flux density (µT)", N6, P1, __, N2, N1, __, __, __),
+
+    // Name          => const (Doc,                  scale, kg,  m, s,  A,  K, mol, cd)
+    pub Milligray    => const ("Absorbed dose (mGy)",   N3, __, P2, N2, __, __, __, __),
+    pub Millisievert => const ("Equivalent dose (mSv)", N3, __, P2, N2, __, __, __, __),
+
+    // Name           => const (Doc,                scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigabecquerel => const ("Radioactivity (GBq)", P9, __, __, N1, __, __, __, __),
+    pub Megabecquerel => const ("Radioactivity (MBq)", P6, __, __, N1, __, __, __, __),
+    pub Kilobecquerel => const ("Radioactivity (kBq)", P3, __, __, N1, __, __, __, __),
+
+    // Name     => const (Doc,              scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kilolux => const ("Illuminance (klx)", P3, __, N2, __, __, __, __, P1),
 }
 
 #[cfg(test)]
