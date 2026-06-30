@@ -31,7 +31,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run Clippy
-        run: cargo clippy --locked --all-targets -- -D warnings
+        run: cargo clippy --all-targets -- -D warnings
 
   unit-test:
     name: unit test
@@ -42,7 +42,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Run tests
-        run: cargo test --locked
+        run: cargo test
 
   msrv:
     name: check MSRV
@@ -98,4 +98,4 @@ jobs:
           key: ${{ matrix.target }}
 
       - name: Run Cargo
-        run: cargo build --locked --target ${{ matrix.target }}
+        run: cargo build --target ${{ matrix.target }}
