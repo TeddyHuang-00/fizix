@@ -1,4 +1,4 @@
-use typenum::{N1, N2, N3, N4, P1, P2, P3, P4, Z0};
+use typenum::{N1, N2, N3, N4, N6, N9, N10, N12, P1, P2, P3, P4, P5, P6, P9, P12, Z0};
 
 use crate::alias_units;
 
@@ -7,42 +7,42 @@ type __ = Z0;
 
 // base units
 alias_units! {
-    // Name      => const (Doc string,                      kg,  m, s,  A,  K, mol, cd)
-    pub Scalar   => const ("Dimensionless quantity",        __, __, __, __, __, __, __),
-    pub Kilogram => const ("Mass (kg)",                     P1, __, __, __, __, __, __),
-    pub Meter    => const ("Length (m)",                    __, P1, __, __, __, __, __),
-    pub Second   => const ("Time (s)",                      __, __, P1, __, __, __, __),
-    pub Ampere   => const ("Electric Current (A)",          __, __, __, P1, __, __, __),
-    pub Kelvin   => const ("Thermodynamic temperature (K)", __, __, __, __, P1, __, __),
-    pub Mole     => const ("Amount of substance (mol)",     __, __, __, __, __, P1, __),
-    pub Candela  => const ("Luminous intensity (cd)",       __, __, __, __, __, __, P1),
+    // Name      => const (Doc,                          scale, kg,  m, s,  A,  K, mol, cd)
+    pub Scalar   => const ("Dimensionless quantity",        __, __, __, __, __, __, __, __),
+    pub Kilogram => const ("Mass (kg)",                     __, P1, __, __, __, __, __, __),
+    pub Meter    => const ("Length (m)",                    __, __, P1, __, __, __, __, __),
+    pub Second   => const ("Time (s)",                      __, __, __, P1, __, __, __, __),
+    pub Ampere   => const ("Electric Current (A)",          __, __, __, __, P1, __, __, __),
+    pub Kelvin   => const ("Thermodynamic temperature (K)", __, __, __, __, __, P1, __, __),
+    pub Mole     => const ("Amount of substance (mol)",     __, __, __, __, __, __, P1, __),
+    pub Candela  => const ("Luminous intensity (cd)",       __, __, __, __, __, __, __, P1),
 }
 
 // derived units with names
 // <https://en.wikipedia.org/wiki/SI_derived_unit>
 alias_units! {
-    // Name       => const (Doc string,                              kg,  m, s,  A,  K, mol, cd)
-    pub Radian    => const ("Plane angle (rad, 1)",                  __, __, __, __, __, __, __),
-    pub Steradian => const ("Solid angle (sr, 1)",                   __, __, __, __, __, __, __),
-    pub Hertz     => const ("Frequency (Hz, s⁻¹)",                   __, __, N1, __, __, __, __),
-    pub Newton    => const ("Force (N, kg⋅m⋅s⁻²)",                   P1, P1, N2, __, __, __, __),
-    pub Pascal    => const ("Pressure (Pa, kg⋅m⁻¹⋅s⁻²)",             P1, N1, N2, __, __, __, __),
-    pub Joule     => const ("Energy (J, kg⋅m²⋅s⁻²)",                 P1, P2, N2, __, __, __, __),
-    pub Watt      => const ("Power (W, kg⋅m²⋅s⁻³)",                  P1, P2, N3, __, __, __, __),
-    pub Coulomb   => const ("Electric charge (C, s⋅A)",              __, __, P1, P1, __, __, __),
-    pub Volt      => const ("Voltage (V, kg⋅m²⋅s⁻³⋅A⁻¹)",            P1, P2, N3, N1, __, __, __),
-    pub Ohm       => const ("Resistance (Ω, kg⋅m²⋅s⁻³⋅A⁻²)",         P1, P2, N3, N2, __, __, __),
-    pub Siemens   => const ("Conductance (S, kg⁻¹⋅m⁻²⋅s³⋅A²)",       N1, N2, P3, P2, __, __, __),
-    pub Farad     => const ("Capacitance (F, kg⁻¹⋅m⁻²⋅s⁴⋅A²)",       N1, N2, P4, P2, __, __, __),
-    pub Henry     => const ("Inductance (H, kg⋅m²⋅s⁻²⋅A⁻²)",         P1, P2, N2, N2, __, __, __),
-    pub Tesla     => const ("Magnetic flux density (T, kg⋅s⁻²⋅A⁻¹)", P1, __, N2, N1, __, __, __),
-    pub Weber     => const ("Magnetic flux (Wb, kg⋅m²⋅s⁻²⋅A⁻¹)",     P1, P2, N2, N1, __, __, __),
-    pub Lumen     => const ("Luminous flux (lm, cd⋅sr)",             __, __, __, __, __, __, P1),
-    pub Lux       => const ("Illuminance (lx, cd⋅sr⋅m⁻²)",           __, N2, __, __, __, __, P1),
-    pub Becquerel => const ("Radioactivity (Bq, s⁻¹)",               __, __, N1, __, __, __, __),
-    pub Gray      => const ("Absorbed dose (Gy, m²⋅s⁻²)",            __, P2, N2, __, __, __, __),
-    pub Sievert   => const ("Equivalent dose (Sv, m²⋅s⁻²)",          __, P2, N2, __, __, __, __),
-    pub Katal     => const ("Catalytic activity (kat, s⁻¹⋅mol)",     __, __, N1, __, __, P1, __),
+    // Name       => const (Doc,                                  scale, kg,  m, s,  A,  K, mol, cd)
+    pub Radian    => const ("Plane angle (rad, 1)",                  __, __, __, __, __, __, __, __),
+    pub Steradian => const ("Solid angle (sr, 1)",                   __, __, __, __, __, __, __, __),
+    pub Hertz     => const ("Frequency (Hz, s⁻¹)",                   __, __, __, N1, __, __, __, __),
+    pub Newton    => const ("Force (N, kg⋅m⋅s⁻²)",                   __, P1, P1, N2, __, __, __, __),
+    pub Pascal    => const ("Pressure (Pa, kg⋅m⁻¹⋅s⁻²)",             __, P1, N1, N2, __, __, __, __),
+    pub Joule     => const ("Energy (J, kg⋅m²⋅s⁻²)",                 __, P1, P2, N2, __, __, __, __),
+    pub Watt      => const ("Power (W, kg⋅m²⋅s⁻³)",                  __, P1, P2, N3, __, __, __, __),
+    pub Coulomb   => const ("Electric charge (C, s⋅A)",              __, __, __, P1, P1, __, __, __),
+    pub Volt      => const ("Voltage (V, kg⋅m²⋅s⁻³⋅A⁻¹)",            __, P1, P2, N3, N1, __, __, __),
+    pub Ohm       => const ("Resistance (Ω, kg⋅m²⋅s⁻³⋅A⁻²)",         __, P1, P2, N3, N2, __, __, __),
+    pub Siemens   => const ("Conductance (S, kg⁻¹⋅m⁻²⋅s³⋅A²)",       __, N1, N2, P3, P2, __, __, __),
+    pub Farad     => const ("Capacitance (F, kg⁻¹⋅m⁻²⋅s⁴⋅A²)",       __, N1, N2, P4, P2, __, __, __),
+    pub Henry     => const ("Inductance (H, kg⋅m²⋅s⁻²⋅A⁻²)",         __, P1, P2, N2, N2, __, __, __),
+    pub Tesla     => const ("Magnetic flux density (T, kg⋅s⁻²⋅A⁻¹)", __, P1, __, N2, N1, __, __, __),
+    pub Weber     => const ("Magnetic flux (Wb, kg⋅m²⋅s⁻²⋅A⁻¹)",     __, P1, P2, N2, N1, __, __, __),
+    pub Lumen     => const ("Luminous flux (lm, cd⋅sr)",             __, __, __, __, __, __, __, P1),
+    pub Lux       => const ("Illuminance (lx, cd⋅sr⋅m⁻²)",           __, __, N2, __, __, __, __, P1),
+    pub Becquerel => const ("Radioactivity (Bq, s⁻¹)",               __, __, __, N1, __, __, __, __),
+    pub Gray      => const ("Absorbed dose (Gy, m²⋅s⁻²)",            __, __, P2, N2, __, __, __, __),
+    pub Sievert   => const ("Equivalent dose (Sv, m²⋅s⁻²)",          __, __, P2, N2, __, __, __, __),
+    pub Katal     => const ("Catalytic activity (kat, s⁻¹⋅mol)",     __, __, __, N1, __, __, P1, __),
 }
 
 // derived units (types-only)
@@ -50,121 +50,192 @@ alias_units! {
 // <https://en.wikipedia.org/wiki/SI_derived_unit#By_field_of_application>
 alias_units! {
     // Kinematics
-    // Name                 => (Doc string,   kg,  m, s,  A,  K, mol, cd)
+    // Name                 => (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
     pub Speed |
-    pub Velocity            => ("(m⋅s⁻¹)",    __, P1, N1, __, __, __, __),
-    pub Acceleration        => ("(m⋅s⁻²)",    __, P1, N2, __, __, __, __),
+    pub Velocity            => ("(m⋅s⁻¹)",    __, __, P1, N1, __, __, __, __),
+    pub Acceleration        => ("(m⋅s⁻²)",    __, __, P1, N2, __, __, __, __),
     pub Jerk |
-    pub Jolt                => ("(m⋅s⁻³)",    __, P1, N3, __, __, __, __),
+    pub Jolt                => ("(m⋅s⁻³)",    __, __, P1, N3, __, __, __, __),
     pub Snap |
-    pub Jounce              => ("(m⋅s⁻⁴)",    __, P1, N4, __, __, __, __),
-    pub Yank                => ("(kg⋅m⋅s⁻³)", P1, P1, N3, __, __, __, __),
-    pub AngularVelocity     => ("(rad⋅s⁻¹)",  __, __, N1, __, __, __, __),
-    pub AngularAcceleration => ("(rad⋅s⁻²)",  __, __, N2, __, __, __, __),
-    pub FrequencyDrift      => ("(Hz⋅s⁻¹)",   __, __, N2, __, __, __, __),
-    pub VolumetricFlow      => ("(m³⋅s⁻¹)",   __, P3, N1, __, __, __, __),
+    pub Jounce              => ("(m⋅s⁻⁴)",    __, __, P1, N4, __, __, __, __),
+    pub Yank                => ("(kg⋅m⋅s⁻³)", __, P1, P1, N3, __, __, __, __),
+    pub AngularVelocity     => ("(rad⋅s⁻¹)",  __, __, __, N1, __, __, __, __),
+    pub AngularAcceleration => ("(rad⋅s⁻²)",  __, __, __, N2, __, __, __, __),
+    pub FrequencyDrift      => ("(Hz⋅s⁻¹)",   __, __, __, N2, __, __, __, __),
+    pub VolumetricFlow      => ("(m³⋅s⁻¹)",   __, __, P3, N1, __, __, __, __),
 
     // Mechanics
-    // Name                     => (Doc string,     kg,  m, s,  A,  K, mol, cd)
-    pub Area                    => ("(m²)",         __, P2, __, __, __, __, __),
-    pub Volume                  => ("(m³)",         __, P3, __, __, __, __, __),
+    // Name                     => (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub Area                    => ("(m²)",         __, __, P2, __, __, __, __, __),
+    pub Volume                  => ("(m³)",         __, __, P3, __, __, __, __, __),
     pub Momentum |
-    pub Impulse                 => ("(N⋅s)",        P1, P1, N1, __, __, __, __),
-    pub AngularMomentum         => ("(N⋅m⋅s)",      P1, P2, N1, __, __, __, __),
+    pub Impulse                 => ("(N⋅s)",        __, P1, P1, N1, __, __, __, __),
+    pub AngularMomentum         => ("(N⋅m⋅s)",      __, P1, P2, N1, __, __, __, __),
     pub Torque |
-    pub MomentOfForce           => ("(N⋅m)",        P1, P2, N2, __, __, __, __),
+    pub MomentOfForce           => ("(N⋅m)",        __, P1, P2, N2, __, __, __, __),
     pub WaveNumber |
     pub OpticalPower |
     pub Curvature |
     pub Vergence |
-    pub SpatialFrequency        => ("(m⁻¹)",        __, N1, __, __, __, __, __),
-    pub AreaDensity             => ("(kg⋅m⁻²)",     P1, N2, __, __, __, __, __),
+    pub SpatialFrequency        => ("(m⁻¹)",        __, __, N1, __, __, __, __, __),
+    pub AreaDensity             => ("(kg⋅m⁻²)",     __, P1, N2, __, __, __, __, __),
     pub Density |
-    pub MassDensity             => ("(kg⋅m⁻³)",     P1, N3, __, __, __, __, __),
-    pub SpecificVolume          => ("(m³⋅kg⁻¹)",    N1, P3, __, __, __, __, __),
-    pub Action                  => ("(J⋅s)",        P1, P2, N1, __, __, __, __),
-    pub SpecificEnergy          => ("(J⋅kg⁻¹)",     __, P2, N2, __, __, __, __),
-    pub EnergyDensity           => ("(J⋅m⁻³)",      P1, N1, N2, __, __, __, __),
+    pub MassDensity             => ("(kg⋅m⁻³)",     __, P1, N3, __, __, __, __, __),
+    pub SpecificVolume          => ("(m³⋅kg⁻¹)",    __, N1, P3, __, __, __, __, __),
+    pub Action                  => ("(J⋅s)",        __, P1, P2, N1, __, __, __, __),
+    pub SpecificEnergy          => ("(J⋅kg⁻¹)",     __, __, P2, N2, __, __, __, __),
+    pub EnergyDensity           => ("(J⋅m⁻³)",      __, P1, N1, N2, __, __, __, __),
     pub SurfaceTension |
-    pub Stiffness               => ("(N⋅m⁻¹)",      P1, __, N2, __, __, __, __),
+    pub Stiffness               => ("(N⋅m⁻¹)",      __, P1, __, N2, __, __, __, __),
     pub HeatFluxDensity |
-    pub Irradiance              => ("(W⋅m⁻²)",      P1, __, N3, __, __, __, __),
+    pub Irradiance              => ("(W⋅m⁻²)",      __, P1, __, N3, __, __, __, __),
     pub KinematicViscosity |
     pub ThermalDiffusivity |
-    pub DiffusionCoefficient    => ("(m²⋅s⁻¹)",     __, P2, N1, __, __, __, __),
-    pub DynamicViscosity        => ("(Pa⋅s)",       P1, N1, N1, __, __, __, __),
-    pub LinearMassDensity       => ("(kg⋅m⁻¹)",     P1, N1, __, __, __, __, __),
-    pub MassFlowRate            => ("(kg⋅s⁻¹)",     P1, __, N1, __, __, __, __),
-    pub Radiance                => ("(W⋅sr⁻¹⋅m⁻²)", P1, __, N3, __, __, __, __),
-    pub SpectralPower           => ("(W⋅m⁻¹)",      P1, P1, N3, __, __, __, __),
-    pub AbsorbedDoseRate        => ("(Gy⋅s⁻¹)",     __, P2, N3, __, __, __, __),
-    pub FuelEfficiency          => ("(m⋅m⁻³)",      __, N2, __, __, __, __, __),
+    pub DiffusionCoefficient    => ("(m²⋅s⁻¹)",     __, __, P2, N1, __, __, __, __),
+    pub DynamicViscosity        => ("(Pa⋅s)",       __, P1, N1, N1, __, __, __, __),
+    pub LinearMassDensity       => ("(kg⋅m⁻¹)",     __, P1, N1, __, __, __, __, __),
+    pub MassFlowRate            => ("(kg⋅s⁻¹)",     __, P1, __, N1, __, __, __, __),
+    pub Radiance                => ("(W⋅sr⁻¹⋅m⁻²)", __, P1, __, N3, __, __, __, __),
+    pub SpectralPower           => ("(W⋅m⁻¹)",      __, P1, P1, N3, __, __, __, __),
+    pub AbsorbedDoseRate        => ("(Gy⋅s⁻¹)",     __, __, P2, N3, __, __, __, __),
+    pub FuelEfficiency          => ("(m⋅m⁻³)",      __, __, N2, __, __, __, __, __),
     pub SpectralIrradiance |
-    pub PowerDensity            => ("(Gy⋅s⁻¹)",     P1, N1, N3, __, __, __, __),
-    pub EnergyFluxDensity       => ("(J⋅m⁻²⋅s⁻¹)",  P1, __, N3, __, __, __, __),
-    pub Compressibility         => ("(Pa⁻¹)",       N1, P1, P2, __, __, __, __),
-    pub RadiantExposure         => ("(J⋅m⁻²)",      P1, __, N2, __, __, __, __),
-    pub MomentOfInertia         => ("(kg⋅m²)",      P1, P2, __, __, __, __, __),
-    pub SpecificAngularMomentum => ("(N⋅m⋅s⋅kg⁻¹)", __, P2, N1, __, __, __, __),
-    pub RadiantIntensity        => ("(W⋅sr⁻¹)",     P1, P2, N3, __, __, __, __),
-    pub SpectralIntensity       => ("(W⋅sr⁻¹⋅m⁻¹)", P1, P1, N3, __, __, __, __),
+    pub PowerDensity            => ("(Gy⋅s⁻¹)",     __, P1, N1, N3, __, __, __, __),
+    pub EnergyFluxDensity       => ("(J⋅m⁻²⋅s⁻¹)",  __, P1, __, N3, __, __, __, __),
+    pub Compressibility         => ("(Pa⁻¹)",       __, N1, P1, P2, __, __, __, __),
+    pub RadiantExposure         => ("(J⋅m⁻²)",      __, P1, __, N2, __, __, __, __),
+    pub MomentOfInertia         => ("(kg⋅m²)",      __, P1, P2, __, __, __, __, __),
+    pub SpecificAngularMomentum => ("(N⋅m⋅s⋅kg⁻¹)", __, __, P2, N1, __, __, __, __),
+    pub RadiantIntensity        => ("(W⋅sr⁻¹)",     __, P1, P2, N3, __, __, __, __),
+    pub SpectralIntensity       => ("(W⋅sr⁻¹⋅m⁻¹)", __, P1, P1, N3, __, __, __, __),
 
     // Chemistry
-    // Name                 => (Doc string,       kg,  m, s,  A,  K, mol, cd)
+    // Name                 => (Doc,           scale, kg,  m, s,  A,  K, mol, cd)
     pub Molarity |
-    pub Concentration       => ("(mol⋅m⁻³)",      __, N3, __, __, __, P1, __),
-    pub MolarVolume         => ("(m³⋅mol⁻¹)",     __, P3, __, __, __, N1, __),
+    pub Concentration       => ("(mol⋅m⁻³)",      __, __, N3, __, __, __, P1, __),
+    pub MolarVolume         => ("(m³⋅mol⁻¹)",     __, __, P3, __, __, __, N1, __),
     pub MolarHeatCapacity |
-    pub MolarEntropy        => ("(J⋅K⁻¹⋅mol⁻¹)",  P1, P2, N2, __, N1, N1, __),
-    pub MolarEnergy         => ("(J⋅mol⁻¹)",      P1, P2, N2, __, __, N1, __),
-    pub MolarConductivity   => ("(S⋅m²⋅mol⁻¹)",   N1, __, P3, P2, __, N1, __),
-    pub Molality            => ("(mol⋅kg⁻¹)",     N1, __, __, __, __, P1, __),
-    pub MolarMass           => ("(kg⋅mol⁻¹)",     P1, __, __, __, __, N1, __),
-    pub CatalyticEfficiency => ("(m³⋅mol⁻¹⋅s⁻¹)", __, P3, N1, __, __, N1, __),
+    pub MolarEntropy        => ("(J⋅K⁻¹⋅mol⁻¹)",  __, P1, P2, N2, __, N1, N1, __),
+    pub MolarEnergy         => ("(J⋅mol⁻¹)",      __, P1, P2, N2, __, __, N1, __),
+    pub MolarConductivity   => ("(S⋅m²⋅mol⁻¹)",   __, N1, __, P3, P2, __, N1, __),
+    pub Molality            => ("(mol⋅kg⁻¹)",     __, N1, __, __, __, __, P1, __),
+    pub MolarMass           => ("(kg⋅mol⁻¹)",     __, P1, __, __, __, __, N1, __),
+    pub CatalyticEfficiency => ("(m³⋅mol⁻¹⋅s⁻¹)", __, __, P3, N1, __, __, N1, __),
 
     // Electromagnetics
-    // Name                     => (Doc string,     kg,  m, s,  A,  K, mol, cd)
-    pub LinearChargeDensity     => ("(C⋅m⁻¹)",      __, N1, P1, P1, __, __, __),
+    // Name                     => (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub LinearChargeDensity     => ("(C⋅m⁻¹)",      __, __, N1, P1, P1, __, __, __),
     pub SurfaceChargeDensity |
     pub PolarizationDensity |
-    pub ElectricFluxDensity     => ("(C⋅m⁻²)",      __, N2, P1, P1, __, __, __),
-    pub VolumeChargeDensity     => ("(C⋅m⁻³)",      __, N3, P1, P1, __, __, __),
+    pub ElectricFluxDensity     => ("(C⋅m⁻²)",      __, __, N2, P1, P1, __, __, __),
+    pub VolumeChargeDensity     => ("(C⋅m⁻³)",      __, __, N3, P1, P1, __, __, __),
     pub Magnetization |
-    pub MagneticFieldStrength   => ("(A⋅m⁻¹)",      __, N1, __, P1, __, __, __),
-    pub CurrentDensity          => ("(A⋅m⁻²)",      __, N2, __, P1, __, __, __),
-    pub ElectricField           => ("(V⋅m⁻¹)",      P1, P1, N3, N1, __, __, __),
-    pub ElectricalConductivity  => ("(S⋅m⁻¹)",      N1, N3, P3, P2, __, __, __),
-    pub Permittivity            => ("(F⋅m⁻¹)",      N1, N3, P4, P2, __, __, __),
-    pub Permeability            => ("(H⋅m⁻¹)",      P1, P1, N2, N2, __, __, __),
-    pub MagneticVectorPotential => ("(Wb⋅m⁻¹)",     P1, P1, N2, N1, __, __, __),
-    pub ElectricDipoleMoment    => ("(C⋅m)",        __, P1, P1, P1, __, __, __),
-    pub MagneticMoment          => ("(A⋅m²)",       __, P2, __, P1, __, __, __),
-    pub ElectricFlux            => ("(V⋅m)",        P1, P3, N3, N1, __, __, __),
-    pub ElectricalResistivity   => ("(Ω⋅m)",        P1, P3, N3, N2, __, __, __),
-    pub MagneticRigidity        => ("(T⋅m)",        P1, P1, N2, N1, __, __, __),
-    pub MagneticReluctance      => ("(H⁻¹)",        N1, N2, P2, P2, __, __, __),
+    pub MagneticFieldStrength   => ("(A⋅m⁻¹)",      __, __, N1, __, P1, __, __, __),
+    pub CurrentDensity          => ("(A⋅m⁻²)",      __, __, N2, __, P1, __, __, __),
+    pub ElectricField           => ("(V⋅m⁻¹)",      __, P1, P1, N3, N1, __, __, __),
+    pub ElectricalConductivity  => ("(S⋅m⁻¹)",      __, N1, N3, P3, P2, __, __, __),
+    pub Permittivity            => ("(F⋅m⁻¹)",      __, N1, N3, P4, P2, __, __, __),
+    pub Permeability            => ("(H⋅m⁻¹)",      __, P1, P1, N2, N2, __, __, __),
+    pub MagneticVectorPotential => ("(Wb⋅m⁻¹)",     __, P1, P1, N2, N1, __, __, __),
+    pub ElectricDipoleMoment    => ("(C⋅m)",        __, __, P1, P1, P1, __, __, __),
+    pub MagneticMoment          => ("(A⋅m²)",       __, __, P2, __, P1, __, __, __),
+    pub ElectricFlux            => ("(V⋅m)",        __, P1, P3, N3, N1, __, __, __),
+    pub ElectricalResistivity   => ("(Ω⋅m)",        __, P1, P3, N3, N2, __, __, __),
+    pub MagneticRigidity        => ("(T⋅m)",        __, P1, P1, N2, N1, __, __, __),
+    pub MagneticReluctance      => ("(H⁻¹)",        __, N1, N2, P2, P2, __, __, __),
     pub ComplexPower |
-    pub ApparentPower           => ("(V⋅A)",        P1, P2, N3, __, __, __, __),
-    pub ElectronMobility        => ("(m²⋅V⁻¹⋅s⁻¹)", N1, __, P2, P1, __, __, __),
-    pub Exposure                => ("(C⋅kg⁻¹)",     N1, __, P1, P1, __, __, __),
+    pub ApparentPower           => ("(V⋅A)",        __, P1, P2, N3, __, __, __, __),
+    pub ElectronMobility        => ("(m²⋅V⁻¹⋅s⁻¹)", __, N1, __, P2, P1, __, __, __),
+    pub Exposure                => ("(C⋅kg⁻¹)",     __, N1, __, P1, P1, __, __, __),
 
     // Photometry
-    // Name              => (Doc string, kg,  m, s,  A,  K, mol, cd)
-    pub LuminousEnergy   => ("(lm⋅s)",   __, __, P1, __, __, __, P1),
-    pub LuminousExposure => ("(lx⋅s)",   __, N2, P1, __, __, __, P1),
-    pub LuminousEfficacy => ("(lm⋅W⁻¹)", N1, N2, P3, __, __, __, P1),
-    pub Luminance        => ("(cd⋅m⁻²)", __, N2, __, __, __, __, P1),
+    // Name              => (Doc,     scale, kg,  m, s,  A,  K, mol, cd)
+    pub LuminousEnergy   => ("(lm⋅s)",   __, __, __, P1, __, __, __, P1),
+    pub LuminousExposure => ("(lx⋅s)",   __, __, N2, P1, __, __, __, P1),
+    pub LuminousEfficacy => ("(lm⋅W⁻¹)", __, N1, N2, P3, __, __, __, P1),
+    pub Luminance        => ("(cd⋅m⁻²)", __, __, N2, __, __, __, __, P1),
 
     // Thermodynamics
-    // Name                         => (Doc string,     kg,  m, s,  A,  K, mol, cd)
+    // Name                         => (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
     pub HeatCapacity |
-    pub Entropy                     => ("(J⋅K⁻¹)",      P1, P2, N2, __, N1, __, __),
+    pub Entropy                     => ("(J⋅K⁻¹)",      __, P1, P2, N2, __, N1, __, __),
     pub SpecificHeatCapacity |
-    pub SpecificEntropy             => ("(J⋅K⁻¹⋅kg⁻¹)", __, P2, N2, __, N1, __, __),
-    pub ThermalConductivity         => ("(W⋅m⁻¹⋅K⁻¹)",  P1, P1, N3, __, N1, __, __),
-    pub ThermalResistance           => ("(K⋅W⁻¹)",      N1, N2, P3, __, P1, __, __),
-    pub ThermalExpansionCoefficient => ("(K⁻¹)",        __, __, __, __, N1, __, __),
-    pub TemperatureGradient         => ("(K⋅m⁻¹)",      __, N1, __, __, P1, __, __),
+    pub SpecificEntropy             => ("(J⋅K⁻¹⋅kg⁻¹)", __, __, P2, N2, __, N1, __, __),
+    pub ThermalConductivity         => ("(W⋅m⁻¹⋅K⁻¹)",  __, P1, P1, N3, __, N1, __, __),
+    pub ThermalResistance           => ("(K⋅W⁻¹)",      __, N1, N2, P3, __, P1, __, __),
+    pub ThermalExpansionCoefficient => ("(K⁻¹)",        __, __, __, __, __, N1, __, __),
+    pub TemperatureGradient         => ("(K⋅m⁻¹)",      __, __, N1, __, __, P1, __, __),
+}
+
+// Same types of different common scales
+alias_units! {
+    // Name        => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Tonne      => const ("Mass (t)",   P3, P1, __, __, __, __, __, __),
+    pub Gram       => const ("Mass (g)",   N3, P1, __, __, __, __, __, __),
+    pub Milligram  => const ("Mass (mg)",  N6, P1, __, __, __, __, __, __),
+    pub Microgram  => const ("Mass (µg)",  N9, P1, __, __, __, __, __, __),
+    pub Nanogram   => const ("Mass (ng)", N12, P1, __, __, __, __, __, __),
+
+    // Name        => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kilometer  => const ("Length (km)", P3, __, P1, __, __, __, __, __),
+    pub Decimeter  => const ("Length (dm)", N1, __, P1, __, __, __, __, __),
+    pub Centimeter => const ("Length (cm)", N2, __, P1, __, __, __, __, __),
+    pub Millimeter => const ("Length (mm)", N3, __, P1, __, __, __, __, __),
+    pub Micrometer => const ("Length (µm)", N6, __, P1, __, __, __, __, __),
+    pub Nanometer  => const ("Length (nm)", N9, __, P1, __, __, __, __, __),
+    pub Angstrom   => const ("Length (Å)", N10, P1, __, __, __, __, __, __),
+
+    // Name         => const (Doc,      scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millisecond => const ("Time (ms)", N3, __, __, P1, __, __, __, __),
+    pub Microsecond => const ("Time (µs)", N6, __, __, P1, __, __, __, __),
+    pub Nanosecond  => const ("Time (ns)", N9, __, __, P1, __, __, __, __),
+
+    // Name         => const (Doc,                  scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kiloampere  => const ("Electric Current (kA)", P3, __, __, __, P1, __, __, __),
+    pub Milliampere => const ("Electric Current (mA)", N3, __, __, __, P1, __, __, __),
+    pub Microampere => const ("Electric Current (µA)", N6, __, __, __, P1, __, __, __),
+
+    // Name        => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
+    pub Litre      => const ("Volume (L)",  N3, __, P3, __, __, __, __, __),
+    pub Millilitre => const ("Volume (mL)", N6, __, P3, __, __, __, __, __),
+    pub Microlitre => const ("Volume (µL)", N6, __, P3, __, __, __, __, __),
+
+    // Name       => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
+    pub Terahertz => const ("Frequency (THz)", P12, __, __, N1, __, __, __, __),
+    pub Gigahertz => const ("Frequency (GHz)",  P9, __, __, N1, __, __, __, __),
+    pub Megahertz => const ("Frequency (MHz)",  P6, __, __, N1, __, __, __, __),
+    pub Kilohertz => const ("Frequency (kHz)",  P3, __, __, N1, __, __, __, __),
+
+    // Name        => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kilonewton => const ("Force (kN)", P3, P1, P1, N2, __, __, __, __),
+
+    // Name        => const (Doc,           scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigapascal => const ("Pressure (GPa)", P9, P1, N1, N2, __, __, __, __),
+    pub Megapascal => const ("Pressure (MPa)", P6, P1, N1, N2, __, __, __, __),
+    pub Bar        => const ("Pressure (bar)", P5, P1, N1, N2, __, __, __, __),
+    pub Kilopascal => const ("Pressure (kPa)", P3, P1, N1, N2, __, __, __, __),
+
+    // Name       => const (Doc,        scale, kg,  m, s,  A,  K, mol, cd)
+    pub Kilojoule => const ("Energy (kJ)", P3, P1, P2, N2, __, __, __, __),
+
+    // Name      => const (Doc,       scale, kg,  m, s,  A,  K, mol, cd)
+    pub Gigawatt => const ("Power (GW)", P9, P1, P2, N3, __, __, __, __),
+    pub Megawatt => const ("Power (MW)", P6, P1, P2, N3, __, __, __, __),
+    pub Kilowatt => const ("Power (kW)", P3, P1, P2, N3, __, __, __, __),
+
+    // Name       => const (Doc,         scale, kg,  m, s,  A,  K, mol, cd)
+    pub Megavolt  => const ("Voltage (MV)", P6, P1, P2, N3, N1, __, __, __),
+    pub Kilovolt  => const ("Voltage (kV)", P3, P1, P2, N3, N1, __, __, __),
+    pub Millivolt => const ("Voltage (mV)", N3, P1, P2, N3, N1, __, __, __),
+    pub Microvolt => const ("Voltage (µV)", N6, P1, P2, N3, N1, __, __, __),
+
+    // Name     => const (Doc,            scale, kg,  m, s,  A,  K, mol, cd)
+    pub Megaohm => const ("Resistance (MΩ)", P6, P1, P2, N3, N2, __, __, __),
+    pub Kiloohm => const ("Resistance (kΩ)", P3, P1, P2, N3, N2, __, __, __),
+
+    // Name        => const (Doc,             scale, kg,  m, s,  A,  K, mol, cd)
+    pub Millifarad => const ("Capacitance (mF)", N3, N1, N2, P4, P2, __, __, __),
+    pub Microfarad => const ("Capacitance (µF)", N6, N1, N2, P4, P2, __, __, __),
 }
 
 #[cfg(test)]

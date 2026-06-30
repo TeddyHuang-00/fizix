@@ -30,20 +30,20 @@ For a single entry without `const`:
 
 ```ignore
 alias_units! {
-    pub Force => ("Force (N)", P1, P1, N2),
+    pub Force => ("Force (N)", Z0, P1, P1, N2),
 }
 // generates:
-pub type Force<V> = Unit<V, P1, P1, N2>;
+pub type Force<V> = Unit<V, Z0, P1, P1, N2>;
 ```
 
 With `const`, it additionally generates:
 
 ```ignore
 alias_units! {
-    pub Newton => const ("Force (N)", P1, P1, N2),
+    pub Newton => const ("Force (N)", Z0, P1, P1, N2),
 }
 // generates:
-pub type Newton<V> = Unit<V, P1, P1, N2>;
+pub type Newton<V> = Unit<V, Z0, P1, P1, N2>;
 pub const fn newton<V>(v: V) -> Newton<V>;
 pub const NEWTON: Newton<f64> = Newton::new(1.0);
 ```
@@ -58,7 +58,7 @@ Multiple aliases with the same dimension can share one definition via `|`:
 
 ```ignore
 alias_units! {
-    pub Velocity | Speed => ("(m/s)", Z0, P1, N1),
+    pub Velocity | Speed => ("(m/s)", Z0, Z0, P1, N1),
 }
 // generates type aliases for both Velocity and Speed.
 // If tagged `const`, both get their own helper function and constant.

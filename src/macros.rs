@@ -152,40 +152,43 @@ mod tests {
     fn test_alias_units_non_scalar() {
         alias_units! {
             None => const ("doc"),
-            First => const ("doc", P1),
-            Second => const ("doc", Z0, P1),
-            Third => const ("doc", Z0, Z0, P1),
-            Fourth => const ("doc", Z0, Z0, Z0, P1),
-            Fifth => const ("doc", Z0, Z0, Z0, Z0, P1),
-            Sixth => const ("doc", Z0, Z0, Z0, Z0, Z0, P1),
-            Seventh => const ("doc", Z0, Z0, Z0, Z0, Z0, Z0, P1),
+            First => const ("doc", Z0, P1),
+            Second => const ("doc", Z0, Z0, P1),
+            Third => const ("doc", Z0, Z0, Z0, P1),
+            Fourth => const ("doc", Z0, Z0, Z0, Z0, P1),
+            Fifth => const ("doc", Z0, Z0, Z0, Z0, Z0, P1),
+            Sixth => const ("doc", Z0, Z0, Z0, Z0, Z0, Z0, P1),
+            Seventh => const ("doc", Z0, Z0, Z0, Z0, Z0, Z0, Z0, P1),
         }
 
         assert_eq!(TypeId::of::<None<f64>>(), TypeId::of::<Unit<f64>>());
-        assert_eq!(TypeId::of::<First<f64>>(), TypeId::of::<Unit<f64, P1>>());
         assert_eq!(
-            TypeId::of::<Second<f64>>(),
+            TypeId::of::<First<f64>>(),
             TypeId::of::<Unit<f64, Z0, P1>>()
         );
         assert_eq!(
-            TypeId::of::<Third<f64>>(),
+            TypeId::of::<Second<f64>>(),
             TypeId::of::<Unit<f64, Z0, Z0, P1>>()
         );
         assert_eq!(
-            TypeId::of::<Fourth<f64>>(),
+            TypeId::of::<Third<f64>>(),
             TypeId::of::<Unit<f64, Z0, Z0, Z0, P1>>()
         );
         assert_eq!(
-            TypeId::of::<Fifth<f64>>(),
+            TypeId::of::<Fourth<f64>>(),
             TypeId::of::<Unit<f64, Z0, Z0, Z0, Z0, P1>>()
         );
         assert_eq!(
-            TypeId::of::<Sixth<f64>>(),
+            TypeId::of::<Fifth<f64>>(),
             TypeId::of::<Unit<f64, Z0, Z0, Z0, Z0, Z0, P1>>()
         );
         assert_eq!(
-            TypeId::of::<Seventh<f64>>(),
+            TypeId::of::<Sixth<f64>>(),
             TypeId::of::<Unit<f64, Z0, Z0, Z0, Z0, Z0, Z0, P1>>()
+        );
+        assert_eq!(
+            TypeId::of::<Seventh<f64>>(),
+            TypeId::of::<Unit<f64, Z0, Z0, Z0, Z0, Z0, Z0, Z0, P1>>()
         );
 
         assert_all_ne!(

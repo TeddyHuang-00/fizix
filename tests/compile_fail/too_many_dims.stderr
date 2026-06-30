@@ -1,21 +1,24 @@
-error[E0107]: struct takes at most 8 generic arguments but 9 generic arguments were supplied
+error[E0107]: struct takes at most 9 generic arguments but 10 generic arguments were supplied
  --> tests/compile_fail/too_many_dims.rs:4:1
   |
 4 | / alias_units! {
-5 | |     pub Foo => ("doc", P1, P1, P1, P1, P1, P1, P1, P1),
+5 | |     pub Foo => ("doc", P1, P1, P1, P1, P1, P1, P1, P1, P1),
 6 | | }
   | | ^
   | | |
-  | |_expected at most 8 generic arguments
+  | |_expected at most 9 generic arguments
   |   help: remove the unnecessary generic argument
   |
-note: struct defined here, with at most 8 generic parameters: `V`, `M`, `L`, `T`, `I`, `K`, `N`, `J`
+note: struct defined here, with at most 9 generic parameters: `V`, `S`, `M`, `L`, `T`, `I`, `K`, `N`, `J`
  --> src/dim.rs
   |
   | pub struct Unit<
   |            ^^^^
   |     V,
   |     -
+  |     // Scale exponent (base-10)
+  |     S = Z0,
+  |     ------
   |     // Mass exponent (kilogram)
   |     M = Z0,
   |     ------

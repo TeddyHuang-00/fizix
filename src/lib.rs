@@ -24,6 +24,7 @@
 
 mod dim;
 pub mod macros;
+pub mod scale;
 mod units;
 pub mod vector;
 

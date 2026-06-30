@@ -67,11 +67,9 @@ impl From<i32> for MyValue {
 
 // Helper: assert Display with both feature modes
 macro_rules! assert_display {
-    ($x:expr, $pretty:literal, $ascii:literal) => {
-        #[cfg(feature = "pretty-display")]
+    ($x:expr, $pretty:literal, $ascii:literal $(,)?) => {
         assert_eq!(format!("{}", $x), $pretty);
-        #[cfg(not(feature = "pretty-display"))]
-        assert_eq!(format!("{}", $x), $ascii);
+        assert_eq!(format!("{:#}", $x), $ascii);
     };
 }
 
@@ -111,10 +109,10 @@ fn test_custom_mul_div_cross_dim() {
     let speed: Speed<_> = d / t;
     assert_eq!(speed.value, MyValue(25));
 
-    // Meter * Kilogram → Unit<Meters, P1, P1> (force-like: kg⋅m)
+    // Meter * Kilogram → Unit<_, Z0, P1, P1> (force-like: kg⋅m)
     let m = Meter::new(MyValue(10));
     let kg = Kilogram::new(MyValue(3));
-    let force_like: Unit<_, P1, P1> = m * kg;
+    let force_like: Unit<_, Z0, P1, P1> = m * kg;
     assert_eq!(force_like.value, MyValue(30));
 }
 

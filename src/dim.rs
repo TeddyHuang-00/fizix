@@ -6,14 +6,58 @@ use core::{
 
 use typenum::{Integer, Z0};
 
-use crate::vector::{CrossProduct, DotProduct, VectorNorm};
+use crate::{
+    scale::ScaleCast,
+    vector::{CrossProduct, DotProduct, VectorNorm},
+};
 
 const EMPTY: char = '\0';
 
-/// A physical quantity with compile-time dimension checking.
+fn fmt_superscript_number(
+    num: i8,
+    f: &mut Formatter<'_>,
+    exp: char,
+    minus: char,
+    digits: &[char; 10],
+) -> Result<(), fmt::Error> {
+    let mut e = [EMPTY; 5];
+
+    let mut idx = 4;
+    let (mut num, exp, sign) = match num {
+        // When exponent is 1, it is completely omitted, so no number or exp operator
+        1 => (0, EMPTY, EMPTY),
+        2.. => (num.unsigned_abs(), exp, EMPTY),
+        ..=-1 => (num.unsigned_abs(), exp, minus),
+        0 => unreachable!("exp cannot be 0"),
+    };
+    // Insert exp operator before number
+    e[0] = exp;
+    // Insert the minus sign if number is negative
+    e[1] = sign;
+
+    // Sets each and every digit in backward order
+    while num > 0 {
+        e[idx] = digits[(num % 10) as usize];
+        num /= 10;
+        idx -= 1;
+        if idx <= 1 {
+            unreachable!("i8 should be no more than 3 digits in decimal")
+        }
+    }
+
+    // Since we need to support no_std, no str can directly constructed,
+    // so we just print each char one by one in order
+    for ch in e.into_iter().filter(|&ch| ch != EMPTY) {
+        f.write_char(ch)?;
+    }
+    Ok(())
+}
+
+/// A physical quantity with compile-time dimension and scale checking.
 ///
-/// Seven type parameters (after `V`) corresponding to the SI base dimensions
-/// for
+/// The type parameter `S` (after `V`) controls the base-10 scale exponent
+/// (e.g. `S = typenum::P3` for ×10³).  The remaining seven type parameters
+/// correspond to the SI base dimensions for
 /// 1. mass (kilogram),
 /// 2. length (meter),
 /// 3. time (second),
@@ -28,13 +72,16 @@ const EMPTY: char = '\0';
 ///
 /// ```
 /// use fizix::Unit;
+/// use typenum::*;
 ///
-/// let d: Unit<f64, typenum::consts::P1> = Unit::new(5.0); // 5.0 kg
+/// let d: Unit<f64, Z0, P1> = Unit::new(5.0); // 5.0 kg
 /// assert_eq!(d.value, 5.0);
 /// ```
 #[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Unit<
     V,
+    // Scale exponent (base-10)
+    S = Z0,
     // Mass exponent (kilogram)
     M = Z0,
     // Length exponent (meter)
@@ -52,11 +99,12 @@ pub struct Unit<
 > {
     /// The numeric value of this quantity.
     pub value: V,
-    _phantom: PhantomData<(M, L, T, I, K, N, J)>,
+    _phantom: PhantomData<(S, M, L, T, I, K, N, J)>,
 }
 
-impl<V, M, L, T, I, K, N, J> Unit<V, M, L, T, I, K, N, J>
+impl<V, S, M, L, T, I, K, N, J> Unit<V, S, M, L, T, I, K, N, J>
 where
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -76,118 +124,36 @@ where
     }
 
     /// Applies a function to underlying value to access unary operator on it
-    pub fn apply<U>(self, func: fn(V) -> U) -> Unit<U, M, L, T, I, K, N, J> {
+    pub fn apply<U>(self, func: fn(V) -> U) -> Unit<U, S, M, L, T, I, K, N, J> {
         Unit::new(func(self.value))
     }
 
-    /// Format the unit name using ASCII symbols
+    /// Convert between scale exponents at runtime.
     ///
-    /// # Errors
-    ///
-    /// This function should return [`Err`] if, and only if, the provided
-    /// [`Formatter`] returns [`Err`]. String formatting is considered an
-    /// infallible operation; this function only returns a [`Result`]
-    /// because writing to the underlying stream might fail and it must provide
-    /// a way to propagate the fact that an error has occurred back up the
-    /// stack.
-    pub fn ascii_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        Self::fmt_unit(
-            f,
-            '*',
-            '^',
-            '-',
-            &['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-        )?;
-        Ok(())
+    /// The difference `S - R` is computed at the type level and applied as a
+    /// power-of-10 factor via [`ScaleCast::scale`].
+    pub fn convert<R>(self) -> Unit<V, R, M, L, T, I, K, N, J>
+    where
+        R: Integer,
+        V: ScaleCast,
+    {
+        let diff = S::to_i8() - R::to_i8();
+        Unit::new(self.value.scale(diff))
     }
 
-    /// Format the unit name using pretty unicode symbols
-    ///
-    /// # Errors
-    ///
-    /// This function should return [`Err`] if, and only if, the provided
-    /// [`Formatter`] returns [`Err`]. String formatting is considered an
-    /// infallible operation; this function only returns a [`Result`]
-    /// because writing to the underlying stream might fail and it must provide
-    /// a way to propagate the fact that an error has occurred back up the
-    /// stack.
-    pub fn pretty_unit(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        Self::fmt_unit(
-            f,
-            '⋅',
-            EMPTY,
-            '⁻',
-            &['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'],
-        )?;
-        Ok(())
-    }
-
-    /// Format the unit name using specific char set
-    fn fmt_unit(
-        f: &mut Formatter<'_>,
-        dot: char,
-        exp: char,
-        minus: char,
-        digits: &[char; 10],
-    ) -> Result<(), fmt::Error> {
-        let items = [
-            ("kg", M::to_i8()),
-            ("m", L::to_i8()),
-            ("s", T::to_i8()),
-            ("A", I::to_i8()),
-            ("K", K::to_i8()),
-            ("mol", N::to_i8()),
-            ("cd", J::to_i8()),
-        ];
-        let positive = items.iter().filter(|&&(_, exponent)| exponent > 0);
-        let negative = items.iter().filter(|&&(_, exponent)| exponent < 0);
-        let unit_name = positive.chain(negative).map(|&(id, exponent)| {
-            let mut e = [EMPTY; 5];
-
-            let mut idx = 4;
-            let (mut exponent, exp, sign) = match exponent {
-                // When exponent is 1, it is completely omitted, so no number or exp operator
-                1 => (0, EMPTY, EMPTY),
-                2.. => (exponent.unsigned_abs(), exp, EMPTY),
-                ..=-1 => (exponent.unsigned_abs(), exp, minus),
-                0 => unreachable!("exp cannot be 0"),
-            };
-            // Insert exp operator between unit name and exponent
-            e[0] = exp;
-            // Insert the minus sign if exponent is negative
-            e[1] = sign;
-
-            // Sets each and every digit in backward order
-            while exponent > 0 {
-                e[idx] = digits[(exponent % 10) as usize];
-                exponent /= 10;
-                idx -= 1;
-                if idx <= 1 {
-                    unreachable!("i8 should be no more than 3 digits in decimal")
-                }
-            }
-            id.chars().chain(e.into_iter().filter(|&ch| ch != EMPTY))
-        });
-
-        // Since we need to support no_std, no str can directly constructed,
-        // so we just print each char one by one in order
-        for (i, u) in unit_name.enumerate() {
-            // If the unit has more than one part,
-            // we need a dot operator to concat them
-            if i > 0 {
-                f.write_char(dot)?;
-            }
-            for s in u {
-                f.write_char(s)?;
-            }
-        }
-        Ok(())
+    /// Convert to the base scale (×10⁰).
+    pub fn to_base(self) -> Unit<V, Z0, M, L, T, I, K, N, J>
+    where
+        V: ScaleCast,
+    {
+        self.convert()
     }
 }
 
-impl<V, M, L, T, I, K, N, J> Display for Unit<V, M, L, T, I, K, N, J>
+impl<V, S, M, L, T, I, K, N, J> Display for Unit<V, S, M, L, T, I, K, N, J>
 where
     V: Display,
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -198,7 +164,27 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         self.value.fmt(f)?;
-        if [
+
+        let (times, digits, dot, exp, minus) = if f.alternate() {
+            (
+                '*',
+                ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                '*',
+                '^',
+                '-',
+            )
+        } else {
+            (
+                '×',
+                ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'],
+                '⋅',
+                '\0',
+                '⁻',
+            )
+        };
+
+        let scale = S::to_i8();
+        let dims = [
             M::to_i8(),
             L::to_i8(),
             T::to_i8(),
@@ -206,17 +192,38 @@ where
             K::to_i8(),
             N::to_i8(),
             J::to_i8(),
-        ]
-        .into_iter()
-        .any(|exp| exp != 0)
-        {
-            // If the not a scalar type, the unit is not empty,
-            // so we should place a space between the value and it
+        ];
+        let has_dims = dims.iter().any(|&exp| exp != 0);
+        let show_scale = scale != 0;
+
+        if show_scale {
+            f.write_char(times)?;
+            f.write_str("10")?;
+            fmt_superscript_number(scale, f, exp, minus, &digits)?;
+        }
+
+        if has_dims {
             f.write_char(' ')?;
-            #[cfg(feature = "pretty-display")]
-            self.pretty_unit(f)?;
-            #[cfg(not(feature = "pretty-display"))]
-            self.ascii_unit(f)?;
+            let items = [
+                ("kg", M::to_i8()),
+                ("m", L::to_i8()),
+                ("s", T::to_i8()),
+                ("A", I::to_i8()),
+                ("K", K::to_i8()),
+                ("mol", N::to_i8()),
+                ("cd", J::to_i8()),
+            ];
+            let positive = items.iter().filter(|&&(_, exponent)| exponent > 0);
+            let negative = items.iter().filter(|&&(_, exponent)| exponent < 0);
+            for (i, &(u, e)) in positive.chain(negative).enumerate() {
+                // If the unit has more than one part,
+                // we need a dot operator to concat them
+                if i > 0 {
+                    f.write_char(dot)?;
+                }
+                f.write_str(u)?;
+                fmt_superscript_number(e, f, exp, minus, &digits)?;
+            }
         }
         Ok(())
     }
@@ -229,13 +236,14 @@ impl<V> From<V> for Unit<V> {
     }
 }
 
-// Add / Sub: same type
+// Add / Sub: same type (including scale)
 macro_rules! impl_add_sub {
     ($trait:ident, $fn:ident) => {
-        impl<V1, V2, V, M, L, T, I, K, N, J> $trait<Unit<V2, M, L, T, I, K, N, J>>
-            for Unit<V1, M, L, T, I, K, N, J>
+        impl<V1, V2, V, S, M, L, T, I, K, N, J> $trait<Unit<V2, S, M, L, T, I, K, N, J>>
+            for Unit<V1, S, M, L, T, I, K, N, J>
         where
             V1: $trait<V2, Output = V>,
+            S: Integer,
             M: Integer,
             L: Integer,
             T: Integer,
@@ -244,10 +252,10 @@ macro_rules! impl_add_sub {
             N: Integer,
             J: Integer,
         {
-            type Output = Unit<V, M, L, T, I, K, N, J>;
+            type Output = Unit<V, S, M, L, T, I, K, N, J>;
 
             #[inline]
-            fn $fn(self, rhs: Unit<V2, M, L, T, I, K, N, J>) -> Self::Output {
+            fn $fn(self, rhs: Unit<V2, S, M, L, T, I, K, N, J>) -> Self::Output {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
@@ -257,13 +265,45 @@ macro_rules! impl_add_sub {
 impl_add_sub!(Add, add);
 impl_add_sub!(Sub, sub);
 
-// Mul / Div: dimension exponents addition/subtraction
+// Mul / Div: dimension and scale exponents addition/subtraction
 macro_rules! impl_mul_div {
     ($trait:ident, $fn:ident, $op_trait:ident) => {
-        impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
-            $trait<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
+        impl<
+            // Lhs
+            V1,
+            S1,
+            M1,
+            L1,
+            T1,
+            I1,
+            K1,
+            N1,
+            J1,
+            // Rhs
+            V2,
+            S2,
+            M2,
+            L2,
+            T2,
+            I2,
+            K2,
+            N2,
+            J2,
+            // Out
+            V,
+            S,
+            M,
+            L,
+            T,
+            I,
+            K,
+            N,
+            J,
+        > $trait<Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>>
+            for Unit<V1, S1, M1, L1, T1, I1, K1, N1, J1>
         where
             V1: $trait<V2, Output = V>,
+            S1: $op_trait<S2, Output = S>,
             M1: $op_trait<M2, Output = M>,
             L1: $op_trait<L2, Output = L>,
             T1: $op_trait<T2, Output = T>,
@@ -271,6 +311,7 @@ macro_rules! impl_mul_div {
             K1: $op_trait<K2, Output = K>,
             N1: $op_trait<N2, Output = N>,
             J1: $op_trait<J2, Output = J>,
+            S: Integer,
             M: Integer,
             L: Integer,
             T: Integer,
@@ -279,10 +320,10 @@ macro_rules! impl_mul_div {
             N: Integer,
             J: Integer,
         {
-            type Output = Unit<V, M, L, T, I, K, N, J>;
+            type Output = Unit<V, S, M, L, T, I, K, N, J>;
 
             #[inline]
-            fn $fn(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+            fn $fn(self, rhs: Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
                 Unit::new(self.value.$fn(rhs.value))
             }
         }
@@ -292,10 +333,11 @@ macro_rules! impl_mul_div {
 impl_mul_div!(Mul, mul, Add);
 impl_mul_div!(Div, div, Sub);
 
-// Neg: value negation, dimensions unchanged
-impl<U, V, M, L, T, I, K, N, J> Neg for Unit<U, M, L, T, I, K, N, J>
+// Neg: value negation, dimensions and scale unchanged
+impl<U, V, S, M, L, T, I, K, N, J> Neg for Unit<U, S, M, L, T, I, K, N, J>
 where
     U: Neg<Output = V>,
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -304,7 +346,7 @@ where
     N: Integer,
     J: Integer,
 {
-    type Output = Unit<V, M, L, T, I, K, N, J>;
+    type Output = Unit<V, S, M, L, T, I, K, N, J>;
 
     #[inline]
     fn neg(self) -> Self::Output {
@@ -313,10 +355,41 @@ where
 }
 
 // Vector arithmetic: dot, cross, norm
-impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
-    DotProduct<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
+impl<
+    // Lhs
+    V1,
+    S1,
+    M1,
+    L1,
+    T1,
+    I1,
+    K1,
+    N1,
+    J1,
+    // Rhs
+    V2,
+    S2,
+    M2,
+    L2,
+    T2,
+    I2,
+    K2,
+    N2,
+    J2,
+    // Out
+    V,
+    S,
+    M,
+    L,
+    T,
+    I,
+    K,
+    N,
+    J,
+> DotProduct<Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, S1, M1, L1, T1, I1, K1, N1, J1>
 where
     V1: DotProduct<V2, Output = V>,
+    S1: Add<S2, Output = S>,
     M1: Add<M2, Output = M>,
     L1: Add<L2, Output = L>,
     T1: Add<T2, Output = T>,
@@ -324,6 +397,7 @@ where
     K1: Add<K2, Output = K>,
     N1: Add<N2, Output = N>,
     J1: Add<J2, Output = J>,
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -332,18 +406,50 @@ where
     N: Integer,
     J: Integer,
 {
-    type Output = Unit<V, M, L, T, I, K, N, J>;
+    type Output = Unit<V, S, M, L, T, I, K, N, J>;
 
     #[inline]
-    fn dot(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+    fn dot(self, rhs: Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
         Unit::new(self.value.dot(rhs.value))
     }
 }
 
-impl<V1, V2, V, M1, L1, T1, I1, K1, N1, J1, M2, L2, T2, I2, K2, N2, J2, M, L, T, I, K, N, J>
-    CrossProduct<Unit<V2, M2, L2, T2, I2, K2, N2, J2>> for Unit<V1, M1, L1, T1, I1, K1, N1, J1>
+impl<
+    // Lhs
+    V1,
+    S1,
+    M1,
+    L1,
+    T1,
+    I1,
+    K1,
+    N1,
+    J1,
+    // Rhs
+    V2,
+    S2,
+    M2,
+    L2,
+    T2,
+    I2,
+    K2,
+    N2,
+    J2,
+    // Out
+    V,
+    S,
+    M,
+    L,
+    T,
+    I,
+    K,
+    N,
+    J,
+> CrossProduct<Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>>
+    for Unit<V1, S1, M1, L1, T1, I1, K1, N1, J1>
 where
     V1: CrossProduct<V2, Output = V>,
+    S1: Add<S2, Output = S>,
     M1: Add<M2, Output = M>,
     L1: Add<L2, Output = L>,
     T1: Add<T2, Output = T>,
@@ -351,6 +457,7 @@ where
     K1: Add<K2, Output = K>,
     N1: Add<N2, Output = N>,
     J1: Add<J2, Output = J>,
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -359,17 +466,18 @@ where
     N: Integer,
     J: Integer,
 {
-    type Output = Unit<V, M, L, T, I, K, N, J>;
+    type Output = Unit<V, S, M, L, T, I, K, N, J>;
 
     #[inline]
-    fn cross(self, rhs: Unit<V2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
+    fn cross(self, rhs: Unit<V2, S2, M2, L2, T2, I2, K2, N2, J2>) -> Self::Output {
         Unit::new(self.value.cross(rhs.value))
     }
 }
 
-impl<U, V, M, L, T, I, K, N, J> VectorNorm for Unit<V, M, L, T, I, K, N, J>
+impl<U, V, S, M, L, T, I, K, N, J> VectorNorm for Unit<V, S, M, L, T, I, K, N, J>
 where
     V: VectorNorm<Output = U>,
+    S: Integer,
     M: Integer,
     L: Integer,
     T: Integer,
@@ -378,7 +486,7 @@ where
     N: Integer,
     J: Integer,
 {
-    type Output = Unit<U, M, L, T, I, K, N, J>;
+    type Output = Unit<U, S, M, L, T, I, K, N, J>;
 
     #[inline]
     fn norm(self) -> Self::Output {
@@ -395,12 +503,11 @@ mod tests {
 
     use super::*;
 
+    // Helper: assert Display with both feature modes
     macro_rules! assert_display {
-        ($x:ident, $pretty:literal, $ascii:literal) => {
-            #[cfg(feature = "pretty-display")]
+        ($x:expr, $pretty:literal, $ascii:literal $(,)?) => {
             assert_eq!(format!("{}", $x), $pretty);
-            #[cfg(not(feature = "pretty-display"))]
-            assert_eq!(format!("{}", $x), $ascii);
+            assert_eq!(format!("{:#}", $x), $ascii);
         };
     }
 
@@ -412,11 +519,11 @@ mod tests {
     type ArbitraryScalar = Unit<X>;
 
     // Non-scalar types with dims (1,2,3,4,5,6,7) and squared (2,4,6,8,10,12,14)
-    type FloatUnit = Unit<f64, P1, P2, P3, P4, P5, P6, P7>;
-    type FloatUnitSquared = Unit<f64, P2, P4, P6, P8, P10, P12, P14>;
-    type IntUnit = Unit<i64, P1, P2, P3, P4, P5, P6, P7>;
-    type IntUnitSquared = Unit<i64, P2, P4, P6, P8, P10, P12, P14>;
-    type ArbitraryUnit = Unit<X, P1, P2, P3, P4, P5, P6, P7>;
+    type FloatUnit = Unit<f64, Z0, P1, P2, P3, P4, P5, P6, P7>;
+    type FloatUnitSquared = Unit<f64, Z0, P2, P4, P6, P8, P10, P12, P14>;
+    type IntUnit = Unit<i64, Z0, P1, P2, P3, P4, P5, P6, P7>;
+    type IntUnitSquared = Unit<i64, Z0, P2, P4, P6, P8, P10, P12, P14>;
+    type ArbitraryUnit = Unit<X, Z0, P1, P2, P3, P4, P5, P6, P7>;
 
     // Test for scalar creation
 
@@ -587,9 +694,9 @@ mod tests {
 
     #[test]
     fn test_chained() {
-        let kg: Unit<_, P1> = Unit::new(1.0);
-        let meter: Unit<_, Z0, P1> = Unit::new(1.0);
-        let sec: Unit<_, Z0, Z0, P1> = Unit::new(1.0);
+        let kg: Unit<_, Z0, P1> = Unit::new(1.0);
+        let meter: Unit<_, Z0, Z0, P1> = Unit::new(1.0);
+        let sec: Unit<_, Z0, Z0, Z0, P1> = Unit::new(1.0);
 
         let x: Unit<_> = Unit::new(1.0);
         let x = x * kg * meter / sec;
@@ -599,7 +706,7 @@ mod tests {
         let x = x * kg * meter / sec;
         let x = x * kg / meter / sec;
 
-        let _: Unit<f64, P6, Z0, N6> = x;
+        let _: Unit<f64, Z0, P6, Z0, N6> = x;
     }
 
     #[test]
@@ -612,35 +719,35 @@ mod tests {
     #[test]
     fn test_display_single_positive_dim() {
         // length (m) - exponent 1, no exponent marker
-        let m: Unit<f64, Z0, P1> = Unit::new(5.0);
+        let m: Unit<f64, Z0, Z0, P1> = Unit::new(5.0);
         assert_display!(m, "5 m", "5 m");
     }
 
     #[test]
     fn test_display_single_negative_dim() {
         // frequency (s⁻¹ = Hz) - negative exponent -1
-        let hz: Unit<f64, Z0, Z0, N1> = Unit::new(440.0);
+        let hz: Unit<f64, Z0, Z0, Z0, N1> = Unit::new(440.0);
         assert_display!(hz, "440 s⁻¹", "440 s^-1");
     }
 
     #[test]
     fn test_display_single_higher_positive_dim() {
         // Area (m²) - exponent 2
-        let area: Unit<f64, Z0, P2> = Unit::new(25.0);
+        let area: Unit<f64, Z0, Z0, P2> = Unit::new(25.0);
         assert_display!(area, "25 m²", "25 m^2");
     }
 
     #[test]
     fn test_display_multi_dim_pos_neg() {
         // Velocity (m⋅s⁻¹) = length^1, time^-1
-        let v: Unit<f64, Z0, P1, N1> = Unit::new(10.0);
+        let v: Unit<f64, Z0, Z0, P1, N1> = Unit::new(10.0);
         assert_display!(v, "10 m⋅s⁻¹", "10 m*s^-1");
     }
 
     #[test]
     fn test_display_three_dim_pos_neg() {
         // Newton-like: kg⋅m⋅s⁻²  (P1, P1, N2)
-        let n: Unit<f64, P1, P1, N2> = Unit::new(100.0);
+        let n: Unit<f64, Z0, P1, P1, N2> = Unit::new(100.0);
         assert_display!(n, "100 kg⋅m⋅s⁻²", "100 kg*m*s^-2");
     }
 
@@ -648,24 +755,24 @@ mod tests {
     fn test_display_neg_first_then_pos() {
         // Siemens-like (conductance): kg⁻¹⋅m⁻²⋅s³⋅A²
         // dim: N1, N2, P3, P2
-        let s: Unit<f64, N1, N2, P3, P2> = Unit::new(2.0);
+        let s: Unit<f64, Z0, N1, N2, P3, P2> = Unit::new(2.0);
         assert_display!(s, "2 s³⋅A²⋅kg⁻¹⋅m⁻²", "2 s^3*A^2*kg^-1*m^-2");
     }
 
     #[test]
     fn test_display_all_negative() {
         // All negative exponents
-        let all_neg: Unit<f64, N1, N2, N3, N1, N1, N1, N1> = Unit::new(1.0);
+        let all_neg: Unit<f64, Z0, N1, N2, N3, N1, N1, N1, N1> = Unit::new(1.0);
         assert_display!(
             all_neg,
             "1 kg⁻¹⋅m⁻²⋅s⁻³⋅A⁻¹⋅K⁻¹⋅mol⁻¹⋅cd⁻¹",
-            "1 kg^-1*m^-2*s^-3*A^-1*K^-1*mol^-1*cd^-1"
+            "1 kg^-1*m^-2*s^-3*A^-1*K^-1*mol^-1*cd^-1",
         );
     }
 
     #[test]
     fn test_display_int_value() {
-        let m: Unit<i32, Z0, P1> = Unit::new(42);
+        let m: Unit<i32, Z0, Z0, P1> = Unit::new(42);
         assert_display!(m, "42 m", "42 m");
     }
 
@@ -673,14 +780,14 @@ mod tests {
     fn test_display_neg_exponent_multi_digit() {
         // Exponent -12 (i8) - tests multi-digit superscript rendering
         // Use a dimension with N12
-        let big_neg: Unit<f64, Z0, Z0, N12> = Unit::new(1.0);
+        let big_neg: Unit<f64, Z0, Z0, Z0, N12> = Unit::new(1.0);
         assert_display!(big_neg, "1 s⁻¹²", "1 s^-12");
     }
 
     #[test]
     fn test_display_pos_exponent_multi_digit() {
         // Exponent 10 - tests multi-digit positive exponent rendering
-        let big_pos: Unit<f64, Z0, P10> = Unit::new(1.0);
+        let big_pos: Unit<f64, Z0, Z0, P10> = Unit::new(1.0);
         assert_display!(big_pos, "1 m¹⁰", "1 m^10");
     }
 
@@ -712,9 +819,9 @@ mod tests {
         }
     }
 
-    type Vec3Scalar = Unit<Vec3, Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
-    type Vec3Unit = Unit<Vec3, P1, P2, P3, P4, P5, P6, P7>;
-    type Vec3UnitSquared = Unit<Vec3, P2, P4, P6, P8, P10, P12, P14>;
+    type Vec3Scalar = Unit<Vec3, Z0, Z0, Z0, Z0, Z0, Z0, Z0, Z0>;
+    type Vec3Unit = Unit<Vec3, Z0, P1, P2, P3, P4, P5, P6, P7>;
+    type Vec3UnitSquared = Unit<Vec3, Z0, P2, P4, P6, P8, P10, P12, P14>;
 
     #[test]
     fn unit_vec3_cross() {

@@ -17,8 +17,7 @@ nightly = false
 crate-type = ["lib"]
 
 [features]
-default = ["pretty-display"]
-pretty-display = []
+default = []
 
 [dependencies]
 paste = "1.0"

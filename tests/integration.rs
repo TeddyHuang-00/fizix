@@ -10,10 +10,8 @@ use fizix::*;
 
 macro_rules! assert_display {
     ($x:expr, $pretty:literal, $ascii:literal) => {
-        #[cfg(feature = "pretty-display")]
         assert_eq!(format!("{}", $x), $pretty);
-        #[cfg(not(feature = "pretty-display"))]
-        assert_eq!(format!("{}", $x), $ascii);
+        assert_eq!(format!("{:#}", $x), $ascii);
     };
 }
 

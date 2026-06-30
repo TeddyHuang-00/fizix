@@ -1,1 +1,12 @@
-words = ["Electromagnetics", "clippy", "fizix", "trybuild", "typenum", "udeps"]
+words = [
+    "Electromagnetics",
+    "MΩ",
+    "clippy",
+    "fizix",
+    "trybuild",
+    "typenum",
+    "udeps",
+    "µg",
+    "µm",
+    "µs",
+]
