@@ -44,12 +44,25 @@ jobs:
       - name: Run tests
         run: cargo test --locked
 
+  msrv:
+    name: check MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Extract MSRV from Cargo.toml
+        id: msrv
+        run: |
+          MSRV=$(awk -F'"' '/^rust-version/ {print $2}' Cargo.toml)
+          echo version=$MSRV >> $GITHUB_OUTPUT
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.msrv.outputs.version }}
+      - run: cargo check
+
   build-test:
     name: build on ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
-    needs: [check, unit-test]
-    permissions:
-      contents: write
+    needs: [check, unit-test, msrv]
     strategy:
       fail-fast: false
       matrix:

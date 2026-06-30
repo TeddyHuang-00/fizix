@@ -1,27 +1,43 @@
-name: Build Release Binaries
+name: Publish Release
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  update-changelog:
-    name: Update Changelog
+  release:
+    name: Publish & Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
 
-      - name: Update CHANGELOG
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish --locked
+
+      - name: Generate CHANGELOG + release notes
         id: changelog
         uses: requarks/changelog-action@v1.10.3
         with:
           token: ${{ github.token }}
-          tag: ${{ github.event.release.tag_name }}
-          writeToFile: false
+          tag: ${{ github.ref_name }}
+          writeToFile: true
 
-      - name: Update Release
+      - name: Commit and push CHANGELOG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "chore: update CHANGELOG (${{ github.ref_name }}) [skip ci]"
+          git push
+
+      - name: Create Release
         uses: ncipollo/release-action@v1.21.0
         with:
-          allowUpdates: true
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changes }}
