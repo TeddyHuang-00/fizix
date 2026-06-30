@@ -2,7 +2,7 @@
 
 [![Crates.io][crates-badge]](https://crates.io/crates/fizix)
 
-Compile-time checked SI units via [`typenum`] type-level integers.
+**fizix** (pronounced like *physics*): compile-time SI dimensions for physics computation, via [`typenum`] type-level integers.
 
 ```toml
 [dependencies]
