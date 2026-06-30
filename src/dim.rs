@@ -713,7 +713,7 @@ mod tests {
     #[test]
     fn test_scalar_display() {
         let s: Unit<f64> = Unit::new(42.0);
-        let out = format!("{}", s);
+        let out = format!("{s}");
         assert_eq!(out, "42");
     }
 
@@ -838,7 +838,7 @@ mod tests {
         assert_eq!(b.value, -5.0);
     }
 
-    /// to_base: S=P3 → S=Z0, value scaled by 10⁻³
+    /// `to_base`: S=P3 → S=Z0, value scaled by 10⁻³
     #[test]
     fn test_scale_convert_to_base() {
         let a: Unit<f64, P3, Z0, P1> = Unit::new(1.0); // 1 km
@@ -917,7 +917,7 @@ mod tests {
     impl CrossProduct for Vec3 {
         type Output = Self;
         fn cross(self, rhs: Self) -> Self {
-            Vec3(
+            Self(
                 self.1 * rhs.2 - self.2 * rhs.1,
                 self.2 * rhs.0 - self.0 * rhs.2,
                 self.0 * rhs.1 - self.1 * rhs.0,

@@ -6,6 +6,8 @@
 //! via the `trybuild` test at the bottom of this file, not via doc-tests
 //! (which aren't collected from integration test crates by `cargo test`).
 
+use std::f64;
+
 use fizix::*;
 
 macro_rules! assert_display {
@@ -101,7 +103,7 @@ fn integer_arithmetic() {
 /// Display output for scalar (dimensionless) values
 #[test]
 fn display_scalar() {
-    let s: Unit<f64> = Scalar::new(3.14);
+    let s: Unit<f64> = Scalar::new(f64::consts::PI);
     assert_display!(s, "3.14", "3.14");
 }
 

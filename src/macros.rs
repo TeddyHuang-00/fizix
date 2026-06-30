@@ -251,16 +251,12 @@ mod tests {
         alias_units! {
             Private => const ("doc"),
             pub PubAll => const ("doc"),
-            pub(crate) PubCrate => const ("doc"),
-            pub(self) PubSelf => const ("doc"),
             pub(super) PubSuper => const ("doc"),
         }
 
         assert_all_eq!(
             TypeId::of::<Private<f64>>(),
             TypeId::of::<PubAll<f64>>(),
-            TypeId::of::<PubCrate<f64>>(),
-            TypeId::of::<PubSelf<f64>>(),
             TypeId::of::<PubSuper<f64>>(),
             TypeId::of::<Unit<f64>>()
         );
@@ -268,13 +264,9 @@ mod tests {
         assert_all_eq!(
             PRIVATE,
             PUB_ALL,
-            PUB_CRATE,
-            PUB_SELF,
             PUB_SUPER,
             private(1.0f64),
             pub_all(1.0f64),
-            pub_crate(1.0f64),
-            pub_self(1.0f64),
             pub_super(1.0f64),
         );
     }

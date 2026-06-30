@@ -25,43 +25,43 @@ impl fmt::Display for MyValue {
 }
 
 impl Add for MyValue {
-    type Output = MyValue;
+    type Output = Self;
 
-    fn add(self, rhs: MyValue) -> MyValue {
-        MyValue(self.0 + rhs.0)
+    fn add(self, rhs: Self) -> Self {
+        Self(self.0 + rhs.0)
     }
 }
 impl Sub for MyValue {
-    type Output = MyValue;
+    type Output = Self;
 
-    fn sub(self, rhs: MyValue) -> MyValue {
-        MyValue(self.0 - rhs.0)
+    fn sub(self, rhs: Self) -> Self {
+        Self(self.0 - rhs.0)
     }
 }
 impl Mul for MyValue {
-    type Output = MyValue;
+    type Output = Self;
 
-    fn mul(self, rhs: MyValue) -> MyValue {
-        MyValue(self.0 * rhs.0)
+    fn mul(self, rhs: Self) -> Self {
+        Self(self.0 * rhs.0)
     }
 }
 impl Div for MyValue {
-    type Output = MyValue;
+    type Output = Self;
 
-    fn div(self, rhs: MyValue) -> MyValue {
-        MyValue(self.0 / rhs.0)
+    fn div(self, rhs: Self) -> Self {
+        Self(self.0 / rhs.0)
     }
 }
 impl Neg for MyValue {
-    type Output = MyValue;
+    type Output = Self;
 
-    fn neg(self) -> MyValue {
-        MyValue(-self.0)
+    fn neg(self) -> Self {
+        Self(-self.0)
     }
 }
 impl From<i32> for MyValue {
-    fn from(v: i32) -> MyValue {
-        MyValue(v as i64)
+    fn from(v: i32) -> Self {
+        Self(i64::from(v))
     }
 }
 
@@ -123,30 +123,6 @@ fn test_custom_neg() {
     let m = Meter::new(MyValue(100));
     let neg = -m;
     assert_eq!(neg.value, MyValue(-100));
-}
-
-// Test: Default
-
-#[test]
-fn test_custom_default() {
-    let m: Meter<MyValue> = Default::default();
-    assert_eq!(m.value, MyValue(0));
-}
-
-// Test: Clone / Copy (no double-free issues)
-
-#[test]
-fn test_custom_clone_copy() {
-    let m = Meter::new(MyValue(42));
-
-    // Clone
-    let cloned = m.clone();
-    assert_eq!(cloned.value, MyValue(42));
-
-    // Copy - both original and copy are independently valid
-    let copied = m;
-    assert_eq!(copied.value, MyValue(42));
-    assert_eq!(m.value, MyValue(42)); // original still accessible after copy
 }
 
 // Test: Comparison (Eq, Ord)

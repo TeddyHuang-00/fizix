@@ -10,7 +10,7 @@ deps:
 
 # Check for errors
 check: && format
-    cargo clippy --fix --allow-staged
+    cargo clippy --fix --all-targets --all-features
 
 # Unit tests
 test: check

@@ -563,7 +563,7 @@ mod tests {
         let _: Unit<f64, N3, Z0, P1, N1> = MILLIMETER / SECOND;
     }
 
-    /// Gram → kg via to_base
+    /// Gram → kg via `to_base`
     #[test]
     fn test_scaled_convert_gram_to_kg() {
         let g = Gram::new(1000.0);
@@ -571,7 +571,7 @@ mod tests {
         assert!((kg.value - 1.0).abs() < 1e-10);
     }
 
-    /// Kilometer → m via to_base
+    /// Kilometer → m via `to_base`
     #[test]
     fn test_scaled_convert_km_to_m() {
         let km = Kilometer::new(1.0);
@@ -579,7 +579,7 @@ mod tests {
         assert!((m.value - 1000.0).abs() < 1e-10);
     }
 
-    /// Millimeter → m via to_base
+    /// Millimeter → m via `to_base`
     #[test]
     fn test_scaled_convert_mm_to_m() {
         let mm = Millimeter::new(5.0);

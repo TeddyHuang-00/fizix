@@ -11,7 +11,11 @@ use core::{
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
-use fizix::{vector::*, *};
+use fizix::{
+    Acceleration, Newton, coulomb, kilogram, meter, newton, second, tesla,
+    vector::{CrossProduct, DotProduct, Vector, VectorNorm},
+    volt,
+};
 
 /// A custom 3D vector container for directional calculation
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
@@ -43,7 +47,7 @@ impl Add for Vector3 {
 impl Sub for Vector3 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
-        Vector3([
+        Self([
             self.0[0] - rhs.0[0],
             self.0[1] - rhs.0[1],
             self.0[2] - rhs.0[2],
@@ -54,7 +58,7 @@ impl Sub for Vector3 {
 impl Mul<f64> for Vector3 {
     type Output = Self;
     fn mul(self, rhs: f64) -> Self::Output {
-        Vector3([self.0[0] * rhs, self.0[1] * rhs, self.0[2] * rhs])
+        Self([self.0[0] * rhs, self.0[1] * rhs, self.0[2] * rhs])
     }
 }
 impl Mul<Vector3> for f64 {
@@ -67,14 +71,14 @@ impl Mul<Vector3> for f64 {
 impl Div<f64> for Vector3 {
     type Output = Self;
     fn div(self, rhs: f64) -> Self::Output {
-        Vector3([self.0[0] / rhs, self.0[1] / rhs, self.0[2] / rhs])
+        Self([self.0[0] / rhs, self.0[1] / rhs, self.0[2] / rhs])
     }
 }
 
 impl Neg for Vector3 {
     type Output = Self;
     fn neg(self) -> Self::Output {
-        Vector3([-self.0[0], -self.0[1], -self.0[2]])
+        Self([-self.0[0], -self.0[1], -self.0[2]])
     }
 }
 
@@ -83,10 +87,10 @@ impl CrossProduct for Vector3 {
     type Output = Self;
 
     fn cross(self, rhs: Self) -> Self::Output {
-        Vector3([
-            self.0[1] * rhs.0[2] - self.0[2] * rhs.0[1],
-            self.0[2] * rhs.0[0] - self.0[0] * rhs.0[2],
-            self.0[0] * rhs.0[1] - self.0[1] * rhs.0[0],
+        Self([
+            self.0[2].mul_add(-rhs.0[1], self.0[1] * rhs.0[2]),
+            self.0[0].mul_add(-rhs.0[2], self.0[2] * rhs.0[0]),
+            self.0[1].mul_add(-rhs.0[0], self.0[0] * rhs.0[1]),
         ])
     }
 }
@@ -95,7 +99,7 @@ impl DotProduct for Vector3 {
     type Output = f64;
 
     fn dot(self, rhs: Self) -> Self::Output {
-        self.0[0] * rhs.0[0] + self.0[1] * rhs.0[1] + self.0[2] * rhs.0[2]
+        self.0[2].mul_add(rhs.0[2], self.0[1].mul_add(rhs.0[1], self.0[0] * rhs.0[0]))
     }
 }
 
@@ -103,7 +107,9 @@ impl VectorNorm for Vector3 {
     type Output = f64;
 
     fn norm(self) -> Self::Output {
-        (self.0[0].powi(2) + self.0[1].powi(2) + self.0[2].powi(2)).sqrt()
+        self.0[2]
+            .mul_add(self.0[2], self.0[1].mul_add(self.0[1], self.0[0].powi(2)))
+            .sqrt()
     }
 }
 
