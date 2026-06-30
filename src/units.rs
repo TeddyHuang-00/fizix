@@ -242,6 +242,8 @@ alias_units! {
 mod tests {
     use super::*;
     use crate::Unit;
+    extern crate alloc;
+    use alloc::format;
 
     /// Helper macro to turn type-only aliases into concrete values.
     ///
@@ -440,5 +442,107 @@ mod tests {
         assert_eq!(eval!(ThermalResistance), eval!(Kelvin / Watt));
         assert_eq!(eval!(ThermalExpansionCoefficient), eval!(Scalar / Kelvin));
         assert_eq!(eval!(TemperatureGradient), eval!(Kelvin / Meter));
+    }
+
+    // Scaled alias tests
+
+    /// Helper: assert Display with both modes
+    macro_rules! assert_display {
+        ($x:expr, $pretty:literal, $ascii:literal $(,)?) => {
+            assert_eq!(format!("{}", $x), $pretty);
+            assert_eq!(format!("{:#}", $x), $ascii);
+        };
+    }
+
+    /// Scaled aliases construct with correct types
+    #[test]
+    fn test_scaled_alias_construction() {
+        let g = Gram::new(1000.0);
+        assert_eq!(g.value, 1000.0);
+
+        let km = Kilometer::new(5.0);
+        assert_eq!(km.value, 5.0);
+
+        let ms = Millisecond::new(500.0);
+        assert_eq!(ms.value, 500.0);
+    }
+
+    /// Scaled alias constants work
+    #[test]
+    fn test_scaled_alias_constants() {
+        assert_eq!(KILOGRAM.value, 1.0);
+        assert_eq!(MILLIGRAM.value, 1.0);
+        assert_eq!(KILOMETER.value, 1.0);
+        assert_eq!(MILLIMETER.value, 1.0);
+        assert_eq!(MILLISECOND.value, 1.0);
+
+        // Same-scale equality
+        assert_eq!(GRAM, gram(1.0));
+        assert_eq!(KILOMETER, kilometer(1.0));
+    }
+
+    /// Multiplication of scaled aliases propagates scale
+    #[test]
+    fn test_scaled_alias_mul() {
+        // Kilometer * Kilometer → S = P3+P3 = P6, L = P2 (area, km²)
+        let _: Unit<f64, P6, Z0, P2> = KILOMETER * KILOMETER;
+
+        // Kilometer / Second → S = P3, L = P1, T = N1 (speed, km/s)
+        let _: Unit<f64, P3, Z0, P1, N1> = KILOMETER / SECOND;
+    }
+
+    /// Division with scaled aliases
+    #[test]
+    fn test_scaled_alias_div() {
+        // Millimeter / Second → S = N3, L = P1, T = N1
+        let _: Unit<f64, N3, Z0, P1, N1> = MILLIMETER / SECOND;
+    }
+
+    /// Gram → kg via to_base
+    #[test]
+    fn test_scaled_convert_gram_to_kg() {
+        let g = Gram::new(1000.0);
+        let kg: Kilogram<f64> = g.to_base();
+        assert!((kg.value - 1.0).abs() < 1e-10);
+    }
+
+    /// Kilometer → m via to_base
+    #[test]
+    fn test_scaled_convert_km_to_m() {
+        let km = Kilometer::new(1.0);
+        let m: Meter<f64> = km.to_base();
+        assert!((m.value - 1000.0).abs() < 1e-10);
+    }
+
+    /// Millimeter → m via to_base
+    #[test]
+    fn test_scaled_convert_mm_to_m() {
+        let mm = Millimeter::new(5.0);
+        let m: Meter<f64> = mm.to_base();
+        assert!((m.value - 0.005).abs() < 1e-15);
+    }
+
+    /// Integer scaled alias conversion
+    #[test]
+    fn test_scaled_convert_int() {
+        let km = Kilometer::new(5i64);
+        let m: Meter<i64> = km.to_base();
+        assert_eq!(m.value, 5000);
+    }
+
+    /// Display for scaled aliases
+    #[test]
+    fn test_scaled_alias_display() {
+        // S = N3 for Gram, base unit is kg
+        let g = Gram::new(5.0);
+        assert_display!(g, "5×10⁻³ kg", "5*10^-3 kg");
+
+        // S = P3 for Kilometer
+        let km = Kilometer::new(3.0);
+        assert_display!(km, "3×10³ m", "3*10^3 m");
+
+        // S = P3 for Kilonewton (base: kg⋅m⋅s⁻²)
+        let kn = Kilonewton::new(2.0);
+        assert_display!(kn, "2×10³ kg⋅m⋅s⁻²", "2*10^3 kg*m*s^-2");
     }
 }

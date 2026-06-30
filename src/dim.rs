@@ -792,7 +792,124 @@ mod tests {
         assert_display!(big_pos, "1 m¹⁰", "1 m^10");
     }
 
-    // Vector algebra tests
+    // Scale arithmetic tests
+
+    /// Multiplication adds scales: 5 km × 3 m = 15 (km⋅m), S = P3+Z0 = P3
+    #[test]
+    fn test_scale_mul() {
+        let a: Unit<f64, P3, Z0, P1> = Unit::new(5.0); // 5 km
+        let b: Unit<f64, Z0, Z0, P1> = Unit::new(3.0); // 3 m
+        let c: Unit<f64, P3, Z0, P2> = a * b;
+        assert_eq!(c.value, 15.0);
+    }
+
+    /// Division subtracts scales: 10 km / 2 s = 5 (km/s), S = P3-Z0 = P3
+    #[test]
+    fn test_scale_div() {
+        let a: Unit<f64, P3, Z0, P1> = Unit::new(10.0);
+        let b: Unit<f64, Z0, Z0, Z0, P1> = Unit::new(2.0);
+        let c: Unit<f64, P3, Z0, P1, N1> = a / b;
+        assert_eq!(c.value, 5.0);
+    }
+
+    /// Same scale addition preserves S
+    #[test]
+    fn test_scale_add_same() {
+        let a: Unit<f64, P3, Z0, P1> = Unit::new(5.0);
+        let b: Unit<f64, P3, Z0, P1> = Unit::new(3.0);
+        let c = a + b;
+        assert_eq!(c.value, 8.0);
+    }
+
+    /// Same scale subtraction preserves S
+    #[test]
+    fn test_scale_sub_same() {
+        let a: Unit<f64, P3, Z0, P1> = Unit::new(10.0);
+        let b: Unit<f64, P3, Z0, P1> = Unit::new(3.0);
+        let c = a - b;
+        assert_eq!(c.value, 7.0);
+    }
+
+    /// Negation preserves scale
+    #[test]
+    fn test_scale_neg() {
+        let a: Unit<f64, N3, Z0, P1> = Unit::new(5.0);
+        let b: Unit<f64, N3, Z0, P1> = -a;
+        assert_eq!(b.value, -5.0);
+    }
+
+    /// to_base: S=P3 → S=Z0, value scaled by 10⁻³
+    #[test]
+    fn test_scale_convert_to_base() {
+        let a: Unit<f64, P3, Z0, P1> = Unit::new(1.0); // 1 km
+        let b: Unit<f64, Z0, Z0, P1> = a.to_base(); // 1000 m
+        assert!((b.value - 1000.0).abs() < 1e-10);
+    }
+
+    /// convert between arbitrary scales
+    #[test]
+    fn test_scale_convert_cross() {
+        // 1 mm (S=N3) → km (S=P3): diff = -3 - 3 = -6 → divide by 10⁶
+        let a: Unit<f64, N3, Z0, P1> = Unit::new(1.0);
+        let b: Unit<f64, P3, Z0, P1> = a.convert();
+        assert!((b.value - 1e-6).abs() < 1e-12);
+    }
+
+    /// convert on scalar (no dims)
+    #[test]
+    fn test_scale_convert_scalar() {
+        let a: Unit<f64, P3> = Unit::new(2.0); // 2 × 10³
+        let b: Unit<f64> = a.convert(); // 2000
+        assert!((b.value - 2000.0).abs() < 1e-10);
+    }
+
+    /// Integer scale conversion truncates as expected
+    #[test]
+    fn test_scale_convert_int() {
+        // 1 km in i64 → 1000 m
+        let a: Unit<i64, P3, Z0, P1> = Unit::new(1);
+        let b: Unit<i64, Z0, Z0, P1> = a.to_base();
+        assert_eq!(b.value, 1000);
+    }
+
+    // Scale display tests
+
+    /// Positive scale (S = P3 = ×10³)
+    #[test]
+    fn test_display_scale_positive() {
+        let x: Unit<f64, P3, Z0, P1> = Unit::new(5.0);
+        assert_display!(x, "5×10³ m", "5*10^3 m");
+    }
+
+    /// Negative scale (S = N3 = ×10⁻³)
+    #[test]
+    fn test_display_scale_negative() {
+        let x: Unit<f64, N3, Z0, P1> = Unit::new(5.0);
+        assert_display!(x, "5×10⁻³ m", "5*10^-3 m");
+    }
+
+    /// Scale + composite unit (kg⋅m⋅s⁻² with S=P3)
+    #[test]
+    fn test_display_scale_with_composite_dim() {
+        let x: Unit<f64, P3, P1, P1, N2> = Unit::new(2.0);
+        assert_display!(x, "2×10³ kg⋅m⋅s⁻²", "2*10^3 kg*m*s^-2");
+    }
+
+    /// Scalar with non-zero scale (no dims)
+    #[test]
+    fn test_display_scale_scalar() {
+        let x: Unit<f64, N3> = Unit::new(42.0);
+        assert_display!(x, "42×10⁻³", "42*10^-3");
+    }
+
+    /// Zero scale still shows no prefix even with dims
+    #[test]
+    fn test_display_zero_scale_with_dims() {
+        let x: Unit<f64, Z0, P1, P1, N2> = Unit::new(2.0);
+        assert_display!(x, "2 kg⋅m⋅s⁻²", "2 kg*m*s^-2");
+    }
+
+    // Vector arithmetic with scale
 
     #[derive(Clone, Copy, Debug, Default, PartialEq)]
     struct Vec3(f64, f64, f64);

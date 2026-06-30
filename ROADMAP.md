@@ -28,7 +28,7 @@ Cross-crate usage confirmed.
 
 ### v0.2.x: Usability
 
-- [ ] `Display` impl: pretty-print "5 m·s⁻²"
+- [ ] `Display` impl: pretty-print "5 m⋅s⁻²"
 - [ ] `From<f64>` / `Into<f64>` for dimensionless quantities
 - [ ] `Pow` trait for integer exponentiation
 - [ ] `MulAssign`, `DivAssign`
