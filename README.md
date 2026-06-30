@@ -34,7 +34,7 @@ let m: Meter<f64> = km.to_base();    // 1000 m
 
 ## License
 
-MIT OR Apache-2.0
+[MIT](https://github.com/TeddyHuang-00/fizix/blob/main/LICENSE-MIT) OR [Apache-2.0](https://github.com/TeddyHuang-00/fizix/blob/main/LICENSE-Apache)
 
 [`typenum`]: https://crates.io/crates/typenum
 [crates-badge]: https://img.shields.io/crates/v/fizix.svg
