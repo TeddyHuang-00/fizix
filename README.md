@@ -4,6 +4,11 @@
 
 Compile-time checked SI units via [`typenum`] type-level integers.
 
+```toml
+[dependencies]
+fizix = "0.1.0"
+```
+
 Dimension mismatches caught at compile time, zero runtime overhead.
 Includes type-level scale prefixes (Millimeter, Kilometer, etc.).
 
