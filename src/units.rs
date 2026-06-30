@@ -5,6 +5,7 @@ use typenum::{
 use crate::alias_units;
 
 // Help improve code readability, doesn't affect actual diagnosis
+#[allow(clippy::min_ident_chars)]
 type __ = Z0;
 
 // base units
@@ -305,6 +306,7 @@ alias_units! {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::float_cmp, clippy::min_ident_chars)]
     use super::*;
     use crate::Unit;
     extern crate alloc;
@@ -378,6 +380,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::suspicious_operation_groupings)]
     fn test_derived_unit() {
         assert_eq!(RADIAN, METER / METER);
         assert_eq!(STERADIAN, (METER * METER) / (METER * METER));

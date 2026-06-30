@@ -497,6 +497,7 @@ where
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::float_cmp, clippy::min_ident_chars)]
     extern crate alloc;
     use alloc::format;
 
@@ -870,6 +871,46 @@ mod tests {
         let a: Unit<i64, P3, Z0, P1> = Unit::new(1);
         let b: Unit<i64, Z0, Z0, P1> = a.to_base();
         assert_eq!(b.value, 1000);
+    }
+
+    /// Integer scale conversion: negative exp divides (truncates)
+    #[test]
+    fn test_scale_convert_int_negative_exp() {
+        let a: Unit<i64, N3, Z0, P1> = Unit::new(5);
+        assert_eq!(a.to_base().value, 0);
+
+        let a: Unit<i64, N3, Z0, P1> = Unit::new(5000);
+        assert_eq!(a.to_base().value, 5);
+    }
+
+    /// Integer scale conversion: negative exp, larger value
+    #[test]
+    fn test_scale_convert_int_negative_exp_large() {
+        let a: Unit<i64, N6, Z0, P1> = Unit::new(1_000_000); // 10⁶ µm = 1 m
+        assert_eq!(a.to_base().value, 1);
+    }
+
+    /// `Unit::apply` preserves scale and dimensions
+    #[test]
+    #[allow(clippy::many_single_char_names)]
+    fn test_apply_preserves_scale_and_dims() {
+        // Scalar
+        let a: Unit<f64> = Unit::new(2.0);
+        assert_eq!(a.apply(|v| v * 3.0).value, 6.0);
+
+        // With scale
+        let b: Unit<f64, P3, Z0, P1> = Unit::new(2.0);
+        let c: Unit<f64, P3, Z0, P1> = b.apply(|v| v * 3.0);
+        assert_eq!(c.value, 6.0);
+
+        // With dimensions
+        let d: Unit<f64, Z0, P1, P1, N2> = Unit::new(2.0);
+        let e: Unit<f64, Z0, P1, P1, N2> = d.apply(|v| v.powi(2));
+        assert_eq!(e.value, 4.0);
+
+        // Integer
+        let f: Unit<i64> = Unit::new(5);
+        assert_eq!(f.apply(|v| v + 3).value, 8);
     }
 
     // Scale display tests

@@ -6,6 +6,8 @@
 //! via the `trybuild` test at the bottom of this file, not via doc-tests
 //! (which aren't collected from integration test crates by `cargo test`).
 
+#![allow(clippy::float_cmp)]
+
 use std::f64;
 
 use fizix::*;
@@ -104,7 +106,7 @@ fn integer_arithmetic() {
 #[test]
 fn display_scalar() {
     let s: Unit<f64> = Scalar::new(f64::consts::PI);
-    assert_display!(s, "3.14", "3.14");
+    assert_display!(s, "3.141592653589793", "3.141592653589793");
 }
 
 /// Display output from chained arithmetic
