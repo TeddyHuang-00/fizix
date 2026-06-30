@@ -3,6 +3,7 @@
 /// Self × 10^exp. `exp` can be negative (implies division).
 pub trait ScaleCast {
     /// Multiply (or divide if `exp < 0`) `self` by 10^|exp|.
+    #[must_use]
     fn scale(self, exp: i8) -> Self;
 }
 
@@ -21,6 +22,7 @@ macro_rules! impl_scale_cast_float {
                     for _ in 0..n {
                         pow10 *= 10.0;
                     }
+                    #[allow(clippy::cast_possible_truncation)]
                     if exp >= 0 {
                         self * pow10 as Self
                     } else {
@@ -41,10 +43,16 @@ macro_rules! impl_scale_cast_int {
             impl ScaleCast for $t {
                 #[inline]
                 fn scale(self, exp: i8) -> Self {
+                    #[allow(
+                        clippy::cast_possible_truncation,
+                        clippy::cast_lossless,
+                        clippy::cast_possible_wrap
+                    )]
+                    let pow10 = 10u64.pow(exp.unsigned_abs() as u32) as Self;
                     if exp >= 0 {
-                        self * 10u64.pow(exp as u32) as Self
+                        self * pow10
                     } else {
-                        self / 10u64.pow((-exp) as u32) as Self
+                        self / pow10
                     }
                 }
             }

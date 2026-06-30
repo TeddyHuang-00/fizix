@@ -99,6 +99,7 @@ pub struct Unit<
 > {
     /// The numeric value of this quantity.
     pub value: V,
+    #[allow(clippy::type_complexity)]
     _phantom: PhantomData<(S, M, L, T, I, K, N, J)>,
 }
 
